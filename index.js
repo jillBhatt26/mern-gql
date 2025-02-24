@@ -14,7 +14,13 @@ connectMongoDB()
 
         const apolloServer = new ApolloServer({
             schema,
-            introspection: true
+            introspection: true,
+            formatError: error => {
+                return {
+                    message: error.message,
+                    code: error.code
+                };
+            }
         });
 
         await apolloServer.start();

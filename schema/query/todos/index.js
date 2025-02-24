@@ -1,12 +1,20 @@
 const TodoModel = require('../../../models/Todo');
 const { todoID, Todo, Todos } = require('../../types/todos');
+const CustomError = require('../../../common/error');
 
 const todosQuery = {
     type: Todos,
     resolve: async () => {
-        const todos = await TodoModel.find({});
+        try {
+            const todos = await TodoModel.find({});
 
-        return todos;
+            return todos;
+        } catch (error) {
+            throw new CustomError(
+                error.message ?? 'Failed to fetch tasks!',
+                500
+            );
+        }
     }
 };
 
@@ -18,9 +26,20 @@ const todoQuery = {
         }
     },
     resolve: async (parent, args) => {
-        const todo = await TodoModel.findById(args.id);
+        try {
+            const todo = await TodoModel.findById(args.id);
 
-        return todo;
+            if (!todo) {
+                throw new CustomError('Task not found', 404);
+            }
+
+            return todo;
+        } catch (error) {
+            throw new CustomError(
+                error.message ?? 'Failed to fetch the task!',
+                500
+            );
+        }
     }
 };
 

@@ -43,7 +43,7 @@ const Todo = new GraphQLObjectType({
     }
 });
 
-const Todos = new GraphQLList(Todo);
+const Todos = new GraphQLNonNull(new GraphQLList(Todo));
 
 const CreateTodoInput = new GraphQLInputObjectType({
     name: 'CreateTodoInput',

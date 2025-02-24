@@ -15,17 +15,24 @@ const CreateTodo = {
         }
     },
     resolve: async (parent, args) => {
-        const {
-            createTodoInput: { name, description, status }
-        } = args;
+        try {
+            const {
+                createTodoInput: { name, description, status }
+            } = args;
 
-        const newTodo = await TodoModel.create({
-            name,
-            description,
-            status
-        });
+            const newTodo = await TodoModel.create({
+                name,
+                description,
+                status
+            });
 
-        return newTodo;
+            return newTodo;
+        } catch (error) {
+            throw new CustomError(
+                error.message ?? 'Failed to create new task!',
+                500
+            );
+        }
     }
 };
 
@@ -41,19 +48,26 @@ const UpdateTodo = {
             updateTodoInput: { id, name, description, status }
         } = args;
 
-        const updatedTodo = await TodoModel.findByIdAndUpdate(
-            id,
-            {
-                $set: {
-                    name,
-                    description,
-                    status
-                }
-            },
-            { new: true }
-        );
+        try {
+            const updatedTodo = await TodoModel.findByIdAndUpdate(
+                id,
+                {
+                    $set: {
+                        name,
+                        description,
+                        status
+                    }
+                },
+                { new: true }
+            );
 
-        return updatedTodo;
+            return updatedTodo;
+        } catch (error) {
+            throw new CustomError(
+                error.message ?? 'Failed to update the task!',
+                500
+            );
+        }
     }
 };
 
@@ -65,9 +79,16 @@ const DeleteTodo = {
         }
     },
     resolve: async (parents, args) => {
-        await TodoModel.findByIdAndDelete(args.id);
+        try {
+            await TodoModel.findByIdAndDelete(args.id);
 
-        return true;
+            return true;
+        } catch (error) {
+            throw new CustomError(
+                error.message ?? 'Failed to delete the task!',
+                500
+            );
+        }
     }
 };
 
