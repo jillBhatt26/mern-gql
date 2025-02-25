@@ -25,11 +25,7 @@ connectMongoDB()
 
         await apolloServer.start();
 
-        app.use(
-            '/graphql',
-            upload.single('file'),
-            expressMiddleware(apolloServer)
-        );
+        app.use('/graphql', expressMiddleware(apolloServer));
 
         app.listen(PORT, () => {
             console.log(
