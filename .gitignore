@@ -4,3 +4,5 @@
 *.log
 *.env
 !example.env
+uploads/*
+!uploads/.gitkeep

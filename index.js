@@ -25,7 +25,11 @@ connectMongoDB()
 
         await apolloServer.start();
 
-        app.use('/graphql', expressMiddleware(apolloServer));
+        app.use(
+            '/graphql',
+            upload.single('file'),
+            expressMiddleware(apolloServer)
+        );
 
         app.listen(PORT, () => {
             console.log(
@@ -36,4 +40,5 @@ connectMongoDB()
     })
     .catch(error => {
         console.log(`❌❌...${error}...❌❌❌`);
+        process.exit(1);
     });
