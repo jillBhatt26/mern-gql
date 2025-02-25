@@ -1,6 +1,7 @@
 const express = require('express');
 const { ApolloServer } = require('@apollo/server');
 const { expressMiddleware } = require('@apollo/server/express4');
+const { graphqlUploadExpress } = require('graphql-upload');
 const { PORT } = require('./config/env');
 const { connectMongoDB } = require('./db');
 const schema = require('./schema');
@@ -12,6 +13,8 @@ connectMongoDB()
         app.use(express.json());
         app.use(express.urlencoded({ extended: true }));
 
+        app.use(graphqlUploadExpress());
+
         const apolloServer = new ApolloServer({
             schema,
             introspection: true,
@@ -20,7 +23,9 @@ connectMongoDB()
                     message: error.message,
                     code: error.code
                 };
-            }
+            },
+            csrfPrevention: true,
+            cache: 'bounded'
         });
 
         await apolloServer.start();

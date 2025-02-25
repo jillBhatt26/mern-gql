@@ -12,7 +12,9 @@
         "dotenv": "^16.4.7",
         "express": "^4.21.2",
         "graphql": "^16.10.0",
-        "mongoose": "^8.10.1"
+        "graphql-upload": "^13.0.0",
+        "mongoose": "^8.10.1",
+        "uuid": "^11.1.0"
     },
     "devDependencies": {
         "nodemon": "^3.1.9"
