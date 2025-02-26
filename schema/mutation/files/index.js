@@ -1,8 +1,9 @@
 const fs = require('fs');
 const path = require('path');
-const { GraphQLNonNull } = require('graphql');
+const { GraphQLUpload } = require('graphql-upload');
 const { finished } = require('stream/promises');
-const { FileType, UploadFileType } = require('../../types/files');
+const { v4: uuidV4 } = require('uuid');
+const { FileType } = require('../../types/files');
 
 const pathToUploadsDir = path.resolve(
     __dirname,
@@ -15,24 +16,34 @@ const pathToUploadsDir = path.resolve(
 const UploadFile = {
     type: FileType,
     args: {
-        file: {
-            type: UploadFileType
-        }
+        file: { type: GraphQLUpload }
     },
     resolve: async (parent, { file }) => {
-        const { filename, mimetype, encoding, createReadStream } = file;
+        try {
+            const { createReadStream, filename, mimetype, encoding } =
+                await file;
 
-        const uploadFilePath = path.resolve(pathToUploadsDir, filename);
+            const ext = path.extname(filename);
 
-        const writeStream = fs.createWriteStream(uploadFilePath);
-        createReadStream().pipe(writeStream);
-        await finished(writeStream);
+            const allowedExts = ['.jpg', '.jpeg', '.png', '.gif'];
 
-        return {
-            filename,
-            mimetype,
-            encoding
-        };
+            if (!allowedExts.includes(ext)) {
+                throw new Error('Unsupported file type provided');
+            }
+
+            const newFileName = `${uuidV4()}${ext}`;
+
+            const uploadFileDest = path.resolve(pathToUploadsDir, newFileName);
+
+            const out = fs.createWriteStream(uploadFileDest);
+
+            createReadStream().pipe(out);
+            await finished(out);
+
+            return { filename, mimetype, encoding };
+        } catch (error) {
+            return new Error(error.message ?? 'Failed to upload file!');
+        }
     }
 };
 

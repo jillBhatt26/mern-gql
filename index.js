@@ -13,7 +13,12 @@ connectMongoDB()
         app.use(express.json());
         app.use(express.urlencoded({ extended: true }));
 
-        app.use(graphqlUploadExpress());
+        app.use(
+            graphqlUploadExpress({
+                maxFileSize: 1000000,
+                maxFiles: 1
+            })
+        );
 
         const apolloServer = new ApolloServer({
             schema,
