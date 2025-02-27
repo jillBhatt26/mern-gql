@@ -1,4 +1,7 @@
 const { GraphQLNonNull, GraphQLBoolean } = require('graphql');
+const { hash: hashPassword, verify: verifyPassword } = require('argon2');
+const UserModel = require('../../../models/User');
+const CustomError = require('../../../common/error');
 const {
     LoginUserInputType,
     SignupUserInputType,
@@ -14,7 +17,56 @@ const SignupUser = {
             type: new GraphQLNonNull(SignupUserInputType)
         }
     },
-    resolver: (parent, args) => {}
+    resolve: async (parent, args, context) => {
+        const {
+            req: { session }
+        } = context;
+
+        if (session.userID || session.username)
+            throw new CustomError('You are already logged in!', 400);
+
+        const {
+            signupUserInput: { username, email, password }
+        } = args;
+
+        if (!username || !email || !password) {
+            throw new CustomError('Please provide all user details!', 400);
+        }
+
+        try {
+            const userWithGivenDetails = await UserModel.findOne({
+                $or: [{ username }, { email }]
+            });
+
+            if (userWithGivenDetails)
+                throw new CustomError('Username or email unavailable!', 400);
+
+            const hashedPassword = await hashPassword(password, {
+                hashLength: 32,
+                parallelism: 1,
+                memoryCost: 1024,
+                timeCose: 4
+            });
+
+            const newUser = await UserModel.create({
+                username,
+                email,
+                password: hashedPassword
+            });
+
+            context.req.session.userID = newUser._id;
+            context.req.session.username = newUser.username;
+
+            return newUser;
+        } catch (error) {
+            if (error instanceof CustomError) throw error;
+
+            throw new CustomError(
+                error.message ?? 'Failed to signup a new user!',
+                500
+            );
+        }
+    }
 };
 
 const LoginUser = {
@@ -24,7 +76,7 @@ const LoginUser = {
             type: new GraphQLNonNull(LoginUserInputType)
         }
     },
-    resolver: (parent, args) => {}
+    resolve: (parent, args) => {}
 };
 
 const LogoutUser = {
@@ -34,7 +86,7 @@ const LogoutUser = {
             type: UserIDType
         }
     },
-    resolver: (parent, args) => {}
+    resolve: (parent, args) => {}
 };
 
 const UpdateUser = {
@@ -44,7 +96,7 @@ const UpdateUser = {
             type: new GraphQLNonNull(UpdateUserInputType)
         }
     },
-    resolver: (parent, args) => {}
+    resolve: (parent, args) => {}
 };
 
 module.exports = {

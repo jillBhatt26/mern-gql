@@ -70,6 +70,9 @@ const UpdateUserInputType = new GraphQLInputObjectType({
 const UserInfoType = new GraphQLObjectType({
     name: 'UserInfoType',
     fields: {
+        _id: {
+            type: UserIDType
+        },
         username: {
             type: new GraphQLNonNull(GraphQLString)
         },

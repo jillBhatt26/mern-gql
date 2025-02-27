@@ -1,4 +1,4 @@
-const { Schema, model } = require('model');
+const { Schema, model } = require('mongoose');
 const { isEmail } = require('validator');
 
 const UserSchema = new Schema(
@@ -7,13 +7,13 @@ const UserSchema = new Schema(
             type: String,
             required: [true, 'Username is required!'],
             trim: true,
-            unique: [true, 'Username should be unique']
+            unique: true
         },
         email: {
             type: String,
             required: [true, 'Email is required!'],
             trim: true,
-            unique: [true, 'Email should be unique'],
+            unique: true,
             validator: [isEmail, 'Email should be in a valid format!']
         },
         password: {
@@ -24,6 +24,15 @@ const UserSchema = new Schema(
     },
     { timestamps: true }
 );
+
+// UserSchema.pre('save', async function (next) {
+//     try {
+//         this.validateSync();
+//         next(); // Call next() to continue with the save operation
+//     } catch (error) {
+//         next(error); // Pass the error to the next middleware
+//     }
+// });
 
 const UserModel = model('users', UserSchema);
 

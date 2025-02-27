@@ -1,8 +1,10 @@
 const express = require('express');
 const { ApolloServer } = require('@apollo/server');
 const { expressMiddleware } = require('@apollo/server/express4');
+const cors = require('cors');
 const { graphqlUploadExpress } = require('graphql-upload');
 const { PORT } = require('./config/env');
+const appSession = require('./config/session');
 const { connectMongoDB } = require('./db');
 const schema = require('./schema');
 
@@ -10,8 +12,19 @@ connectMongoDB()
     .then(async conn => {
         const app = express();
 
+        app.use(
+            cors({
+                origin: ['http://localhost:5000/graphql'],
+                methods: ['GET', 'POST', 'PUT', 'DELETE'],
+                allowedHeaders: ['Content-Type'],
+                credentials: true
+            })
+        );
+
         app.use(express.json());
         app.use(express.urlencoded({ extended: true }));
+
+        app.use(appSession);
 
         app.use(
             graphqlUploadExpress({
@@ -35,7 +48,12 @@ connectMongoDB()
 
         await apolloServer.start();
 
-        app.use('/graphql', expressMiddleware(apolloServer));
+        app.use(
+            '/graphql',
+            expressMiddleware(apolloServer, {
+                context: ({ req, res }) => ({ req, res })
+            })
+        );
 
         app.listen(PORT, () => {
             console.log(
