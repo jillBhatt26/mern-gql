@@ -188,12 +188,127 @@ const UpdateUser = {
             type: new GraphQLNonNull(UpdateUserInputType)
         }
     },
-    resolve: (parent, args) => {}
+    resolve: async (parent, args, context) => {
+        try {
+            const {
+                req: { session }
+            } = context;
+
+            if (!session.userID || !session.username) {
+                throw new CustomError('You need to login first!', 401);
+            }
+
+            const {
+                updateUserInput: {
+                    username: inputUsername,
+                    email: inputEmail,
+                    password: inputPassword
+                }
+            } = args;
+
+            const detailsToUpdate = {};
+
+            if (inputUsername) {
+                const userWithInputUsername = await UserModel.findOne({
+                    username: inputUsername
+                });
+
+                if (userWithInputUsername)
+                    throw new CustomError('New username already in use!', 400);
+
+                detailsToUpdate.username = inputUsername;
+            }
+
+            if (inputEmail) {
+                const userWithInputEmail = await UserModel.findOne({
+                    email: inputEmail
+                });
+
+                if (userWithInputEmail)
+                    throw new CustomError('New email already in use!', 400);
+
+                detailsToUpdate.email = inputEmail;
+            }
+
+            if (inputPassword) {
+                const hashedPassword = await hashPassword(inputPassword, {
+                    hashLength: 32,
+                    parallelism: 1,
+                    memoryCost: 1024,
+                    timeCose: 4
+                });
+
+                detailsToUpdate.password = hashedPassword;
+            }
+
+            const { userID } = session;
+
+            await destroySession(session);
+
+            const updatedUser = await UserModel.findByIdAndUpdate(
+                userID,
+                {
+                    $set: detailsToUpdate
+                },
+                { new: true }
+            );
+
+            const { _id, username, email } = updatedUser;
+
+            return {
+                _id,
+                username,
+                email
+            };
+        } catch (error) {
+            if (error instanceof CustomError) throw error;
+
+            throw new CustomError(
+                error.message ?? 'Failed to update the user!',
+                500
+            );
+        }
+    }
+};
+
+const DeleteUser = {
+    type: new GraphQLNonNull(GraphQLBoolean),
+    resolve: async (parent, args, context) => {
+        try {
+            const {
+                req: { session }
+            } = context;
+
+            if (!session.userID || !session.username) {
+                throw new CustomError('You need to login first!', 401);
+            }
+
+            const userToDelete = await UserModel.findByIdAndDelete(
+                session.userID
+            );
+
+            if (!userToDelete) {
+                throw new CustomError('User not deleted!', 400);
+            }
+
+            const isLoggedOut = await destroySession(session);
+
+            return isLoggedOut;
+        } catch (error) {
+            if (error instanceof CustomError) throw error;
+
+            throw new CustomError(
+                error.message ?? 'Failed to delete the user!',
+                500
+            );
+        }
+    }
 };
 
 module.exports = {
     SignupUser,
     LoginUser,
     LogoutUser,
-    UpdateUser
+    UpdateUser,
+    DeleteUser
 };
