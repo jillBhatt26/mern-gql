@@ -5,10 +5,20 @@ const CustomError = require('../../../common/error');
 const {
     LoginUserInputType,
     SignupUserInputType,
-    UserIDType,
     UserInfoType,
     UpdateUserInputType
 } = require('../../types/users');
+
+const destroySession = session =>
+    new Promise((resolve, reject) => {
+        session.destroy(error => {
+            if (error) {
+                return reject(error.message);
+            }
+
+            return resolve(true);
+        });
+    });
 
 const SignupUser = {
     type: UserInfoType,
@@ -76,17 +86,99 @@ const LoginUser = {
             type: new GraphQLNonNull(LoginUserInputType)
         }
     },
-    resolve: (parent, args) => {}
+    resolve: async (parent, args, context) => {
+        try {
+            const {
+                req: { session }
+            } = context;
+
+            if (session.userID && session.username) {
+                throw new CustomError('You are already logged in!', 400);
+            }
+
+            const {
+                loginUserInput: {
+                    username: inputUsername,
+                    email: inputEmail,
+                    password: inputPassword
+                }
+            } = args;
+
+            if (!inputUsername && !inputEmail) {
+                throw new CustomError(
+                    'Either username or email is required to login',
+                    400
+                );
+            }
+
+            if (!inputPassword) {
+                throw new CustomError('Password is required to login', 400);
+            }
+
+            const userToLogin = await UserModel.findOne({
+                $or: [{ username: inputUsername }, { email: inputEmail }]
+            });
+
+            if (!userToLogin) {
+                throw new CustomError(
+                    'User not found! You need to signup first!',
+                    404
+                );
+            }
+
+            const isPasswordCorrect = await verifyPassword(
+                userToLogin.password,
+                inputPassword
+            );
+
+            if (!isPasswordCorrect) {
+                throw new CustomError('Incorrect password!', 400);
+            }
+            const { _id, username, email } = userToLogin;
+
+            session.userID = _id;
+            session.username = username;
+
+            return {
+                _id,
+                username,
+                email
+            };
+        } catch (error) {
+            if (error instanceof CustomError) throw error;
+
+            throw new CustomError(
+                error.message ?? 'Failed to login the user!',
+                500
+            );
+        }
+    }
 };
 
 const LogoutUser = {
-    type: new GraphQLNonNull(GraphQLBoolean),
-    args: {
-        id: {
-            type: UserIDType
+    type: GraphQLBoolean,
+    resolve: async (parent, args, context) => {
+        try {
+            const {
+                req: { session }
+            } = context;
+
+            if (!session.userID || !session.username) {
+                throw new CustomError('You need to login first!', 401);
+            }
+
+            let isUserLoggedOut = await destroySession(session);
+
+            return isUserLoggedOut;
+        } catch (error) {
+            if (error instanceof CustomError) throw error;
+
+            throw new CustomError(
+                error.message ?? 'Failed to logout the user!',
+                500
+            );
         }
-    },
-    resolve: (parent, args) => {}
+    }
 };
 
 const UpdateUser = {

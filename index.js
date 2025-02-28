@@ -3,7 +3,7 @@ const { ApolloServer } = require('@apollo/server');
 const { expressMiddleware } = require('@apollo/server/express4');
 const cors = require('cors');
 const { graphqlUploadExpress } = require('graphql-upload');
-const { PORT } = require('./config/env');
+const { PORT, FE_URL } = require('./config/env');
 const appSession = require('./config/session');
 const { connectMongoDB } = require('./db');
 const schema = require('./schema');
@@ -14,7 +14,7 @@ connectMongoDB()
 
         app.use(
             cors({
-                origin: ['http://localhost:5000/graphql'],
+                origin: [FE_URL],
                 methods: ['GET', 'POST', 'PUT', 'DELETE'],
                 allowedHeaders: ['Content-Type'],
                 credentials: true
