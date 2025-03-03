@@ -3,6 +3,7 @@ const { ApolloServer } = require('@apollo/server');
 const { expressMiddleware } = require('@apollo/server/express4');
 const cors = require('cors');
 const { graphqlUploadExpress } = require('graphql-upload');
+const { applyMiddleware } = require('graphql-middleware');
 const { PORT, FE_URL } = require('./config/env');
 const appSession = require('./config/session');
 const { connectMongoDB } = require('./db');
@@ -33,8 +34,13 @@ connectMongoDB()
             })
         );
 
+        const schemaWithMiddleware = applyMiddleware(
+            schema
+            // TODO: Add all the middleware here...
+        );
+
         const apolloServer = new ApolloServer({
-            schema,
+            schema: schemaWithMiddleware,
             introspection: true,
             formatError: error => {
                 return {
