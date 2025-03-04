@@ -34,13 +34,8 @@ connectMongoDB()
             })
         );
 
-        const schemaWithMiddleware = applyMiddleware(
-            schema
-            // TODO: Add all the middleware here...
-        );
-
         const apolloServer = new ApolloServer({
-            schema: schemaWithMiddleware,
+            schema,
             introspection: true,
             formatError: error => {
                 return {

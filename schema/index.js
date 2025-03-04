@@ -1,8 +1,10 @@
 const { GraphQLSchema } = require('graphql');
-const query = require('./query');
-const mutation = require('./mutation');
-const { FileType } = require('./types/files');
+const { applyMiddleware } = require('graphql-middleware');
 const { GraphQLUpload } = require('graphql-upload');
+const mutation = require('./mutation');
+const query = require('./query');
+const rules = require('./rules');
+const { FileType } = require('./types/files');
 
 const schema = new GraphQLSchema({
     query,
@@ -13,4 +15,10 @@ const schema = new GraphQLSchema({
     }
 });
 
-module.exports = schema;
+const schemaWithMiddleware = applyMiddleware(
+    schema,
+    // All middleware here...
+    rules
+);
+
+module.exports = schemaWithMiddleware;
