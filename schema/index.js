@@ -18,7 +18,7 @@ const schema = new GraphQLSchema({
 const schemaWithMiddleware = applyMiddleware(
     schema,
     // All middleware here...
-    rules
+    ...rules
 );
 
 module.exports = schemaWithMiddleware;
