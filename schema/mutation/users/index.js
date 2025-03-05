@@ -191,10 +191,12 @@ const UpdateUser = {
     resolve: async (parent, args, context) => {
         try {
             const {
-                req: { session }
+                req: {
+                    session: { userID, username }
+                }
             } = context;
 
-            if (!session.userID || !session.username) {
+            if (!userID || !username) {
                 throw new CustomError('You need to login first!', 401);
             }
 
@@ -208,8 +210,8 @@ const UpdateUser = {
 
             // first check if user exists
             const userToUpdate = await UserModel.findOne({
-                _id: session.userID,
-                username: inputUsername
+                _id: userID,
+                username
             });
 
             if (!userToUpdate) {
@@ -251,8 +253,6 @@ const UpdateUser = {
                 detailsToUpdate.password = hashedPassword;
             }
 
-            const { userID } = session;
-
             await destroySession(session);
 
             const updatedUser = await UserModel.findByIdAndUpdate(
@@ -263,12 +263,16 @@ const UpdateUser = {
                 { new: true }
             );
 
-            const { _id, username, email } = updatedUser;
+            const {
+                _id,
+                username: updatedUsername,
+                email: updatedEmail
+            } = updatedUser;
 
             return {
                 _id,
-                username,
-                email
+                username: updatedUsername,
+                email: updatedEmail
             };
         } catch (error) {
             if (error instanceof CustomError) throw error;
