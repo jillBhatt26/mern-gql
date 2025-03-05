@@ -6,6 +6,9 @@ const { graphqlUploadExpress } = require('graphql-upload');
 const { FE_URL } = require('../config/env');
 const appSession = require('../config/session');
 const schema = require('../schema');
+const CustomError = require('../shared/CustomError');
+
+console.log('CustomError: ', CustomError);
 
 const initExpressApolloApp = async () => {
     const app = express();
