@@ -1,7 +1,7 @@
 const { GraphQLNonNull, GraphQLBoolean } = require('graphql');
 const { hash: hashPassword, verify: verifyPassword } = require('argon2');
 const UserModel = require('../../../models/User');
-const CustomError = require('../../../shared/error');
+const CustomError = require('../../../shared/CustomError');
 const {
     LoginUserInputType,
     SignupUserInputType,

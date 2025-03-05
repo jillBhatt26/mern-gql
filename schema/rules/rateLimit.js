@@ -1,6 +1,6 @@
 const { createRateLimitRule } = require('graphql-rate-limit');
 const { shield } = require('graphql-shield');
-const CustomError = require('../../shared/error');
+const CustomError = require('../../shared/CustomError');
 
 const rateLimitRule = createRateLimitRule({
     identifyContext: ctx => ctx.req.session.userID
