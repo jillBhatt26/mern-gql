@@ -34,7 +34,6 @@ const initExpressApolloApp = async () => {
     const apolloServer = new ApolloServer({
         schema,
         introspection: true,
-        playground: true,
         formatError: error => {
             return {
                 message: error.message,
