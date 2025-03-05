@@ -253,7 +253,7 @@ const UpdateUser = {
                 detailsToUpdate.password = hashedPassword;
             }
 
-            await destroySession(session);
+            await destroySession(req.session);
 
             const updatedUser = await UserModel.findByIdAndUpdate(
                 userID,
