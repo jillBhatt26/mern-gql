@@ -206,6 +206,16 @@ const UpdateUser = {
                 }
             } = args;
 
+            // first check if user exists
+            const userToUpdate = await UserModel.findOne({
+                _id: session.userID,
+                username: inputUsername
+            });
+
+            if (!userToUpdate) {
+                throw new CustomError('User to update not found!', 404);
+            }
+
             const detailsToUpdate = {};
 
             if (inputUsername) {
