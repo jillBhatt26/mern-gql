@@ -1,5 +1,5 @@
 const { shield, allow } = require('graphql-shield');
-const CustomError = require('../../shared/CustomError');
+const CustomError = require('../../common/CustomError');
 const authMiddleware = require('../../middleware/auth');
 
 const authRules = shield(

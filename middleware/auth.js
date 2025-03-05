@@ -1,4 +1,4 @@
-const CustomError = require('../shared/CustomError');
+const CustomError = require('../common/CustomError');
 const UserModel = require('../models/User');
 
 const authMiddleware = async (resolve, parent, args, context, info) => {

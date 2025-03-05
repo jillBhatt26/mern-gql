@@ -1,6 +1,6 @@
 const TodoModel = require('../../../models/Todo');
 const { todoID, Todo, Todos } = require('../../types/todos');
-const CustomError = require('../../../shared/CustomError');
+const CustomError = require('../../../common/CustomError');
 
 const todosQuery = {
     type: Todos,
