@@ -1,9 +1,6 @@
-const initExpressApolloApp = require('./app');
-const { PORT } = require('./config/env');
 const { connectMongoDB } = require('./db');
-const CustomError = require('./shared/CustomError');
-
-console.log('CustomError: ', CustomError);
+const { PORT } = require('./config/env');
+const initExpressApolloApp = require('./app');
 
 connectMongoDB()
     .then(async conn => {

@@ -8,6 +8,8 @@ const appSession = require('../config/session');
 const schema = require('../schema');
 
 const initExpressApolloApp = async () => {
+    console.log('init app...');
+
     const app = express();
 
     app.use(
