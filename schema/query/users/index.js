@@ -1,6 +1,6 @@
 const UserModel = require('../../../models/User');
 const { UserInfoType } = require('../../types/users');
-const CustomError = require('../../../common/error');
+const CustomError = require('../../../shared/error');
 
 const FetchActiveUser = {
     type: UserInfoType,
