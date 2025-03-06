@@ -88,6 +88,11 @@ const DeleteTodo = {
     },
     resolve: async (parents, args) => {
         try {
+            const todoToDelete = await TodoModel.findById(args.id);
+
+            if (!todoToDelete)
+                throw new CustomError('Task to delete not found!', 404);
+
             await TodoModel.findByIdAndDelete(args.id);
 
             return true;
