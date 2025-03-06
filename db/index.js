@@ -1,9 +1,9 @@
 const { connect, connection } = require('mongoose');
 const { DB_URL } = require('../config/env');
 
-const connectMongoDB = async () => {
+const connectMongoDB = async (url = '') => {
     try {
-        const conn = await connect(DB_URL);
+        const conn = await connect(url.length > 0 ? url : DB_URL);
 
         return conn;
     } catch (error) {
