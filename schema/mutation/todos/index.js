@@ -1,5 +1,6 @@
 const { GraphQLNonNull, GraphQLBoolean } = require('graphql');
 const TodoModel = require('../../../models/Todo');
+const CustomError = require('../../../common/CustomError');
 const {
     CreateTodoInput,
     UpdateTodoInput,
@@ -19,6 +20,13 @@ const CreateTodo = {
             const {
                 createTodoInput: { name, description, status }
             } = args;
+
+            if (!name || !description) {
+                throw new CustomError(
+                    'Please provide name and description of new todo!',
+                    400
+                );
+            }
 
             const newTodo = await TodoModel.create({
                 name,
