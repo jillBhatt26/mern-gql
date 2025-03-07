@@ -211,6 +211,85 @@ describe('TODOS MUTATIONS SUITE', () => {
         });
     });
 
+    describe('MUTATION UpdateTodo', () => {
+        let createdTodo;
+        const fakeObjectID = '67c9f1fc0bd6317d06a95123';
+
+        beforeEach(async () => {
+            const newTodoModel = await TodosModel.create({
+                name: 'Test task 1',
+                description: 'Test task 1 description'
+            });
+
+            expect(newTodoModel).toHaveProperty('_id');
+            expect(newTodoModel).toHaveProperty('name', 'Test task 1');
+            expect(newTodoModel).toHaveProperty(
+                'description',
+                'Test task 1 description'
+            );
+            expect(newTodoModel).toHaveProperty('status', 'pending');
+
+            createdTodo = newTodoModel;
+        });
+
+        it('Should should show error if todo is not found', async () => {
+            const query = `
+                    mutation UpdateTodo {
+                        UpdateTodo (updateTodoInput: { id: "${fakeObjectID}", name: "Todo 1 name updated", description: "Todo 1 description updated", status: PROGRESS }) {
+                            id,
+                            name,
+                            description,
+                            status
+                        }
+                    }
+                `;
+
+            const response = await request(app).post(API_URL).send({ query });
+
+            expect(response.status).toStrictEqual(200);
+            expect(response.body.data.UpdateTodo).toBeNull();
+            expect(response.body).toHaveProperty('errors');
+            expect(response.body.errors).toEqual(
+                expect.arrayContaining([
+                    {
+                        message: 'Task to update not found!'
+                    }
+                ])
+            );
+        });
+
+        it('Should should find and update the todo using the details provided', async () => {
+            const query = `
+                    mutation UpdateTodo {
+                        UpdateTodo (updateTodoInput: { id: "${createdTodo.id}", name: "Todo 1 name updated", description: "Todo 1 description updated", status: PROGRESS }) {
+                            id,
+                            name,
+                            description,
+                            status
+                        }
+                    }
+                `;
+
+            const response = await request(app).post(API_URL).send({ query });
+
+            expect(response.status).toStrictEqual(200);
+            expect(response.body.errors).toBeUndefined();
+            expect(response.body.data).toHaveProperty('UpdateTodo');
+
+            const { id, name, description, status } =
+                response.body.data.UpdateTodo;
+
+            expect(createdTodo.id).toStrictEqual(id);
+            expect(name).not.toStrictEqual(createdTodo.name);
+            expect(description).not.toStrictEqual(createdTodo.description);
+            expect(status).not.toStrictEqual(createdTodo.status);
+
+            expect(name).toStrictEqual('Todo 1 name updated');
+            expect(description).toStrictEqual('Todo 1 description updated');
+            expect(status).toStrictEqual('PROGRESS');
+        });
+    });
+
     afterAll(async () => {
         await conn.connection.dropCollection('todos');
         await conn.connection.dropDatabase();

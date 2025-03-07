@@ -57,6 +57,11 @@ const UpdateTodo = {
         } = args;
 
         try {
+            const todoToUpdate = await TodoModel.findById(id);
+
+            if (!todoToUpdate)
+                throw new CustomError('Task to update not found!', 404);
+
             const updatedTodo = await TodoModel.findByIdAndUpdate(
                 id,
                 {
