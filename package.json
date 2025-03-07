@@ -6,8 +6,8 @@
     "scripts": {
         "dev": "nodemon ./index.js",
         "prod": "node ./index.js",
-        "test": "jest --forceExit --runInBand",
-        "test:watch": "jest --forceExit --runInBand --watchAll",
+        "test": "jest --forceExit --runInBand --detectOpenHandles",
+        "test:watch": "jest --forceExit --runInBand --detectOpenHandles --watchAll",
         "dev:test": "concurrently \"yarn dev\" \"yarn test:watch\""
     },
     "dependencies": {

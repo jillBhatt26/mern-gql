@@ -288,6 +288,34 @@ describe('TODOS MUTATIONS SUITE', () => {
             expect(description).toStrictEqual('Todo 1 description updated');
             expect(status).toStrictEqual('PROGRESS');
         });
+
+        it('Should update only the details provided', async () => {
+            const query = `
+                    mutation UpdateTodo {
+                        UpdateTodo (updateTodoInput: { id: "${createdTodo.id}", status: PROGRESS }) {
+                            id,
+                            name,
+                            description,
+                            status
+                        }
+                    }
+                `;
+
+            const response = await request(app).post(API_URL).send({ query });
+
+            expect(response.status).toStrictEqual(200);
+            expect(response.body.errors).toBeUndefined();
+            expect(response.body.data).toHaveProperty('UpdateTodo');
+
+            const { id, name, description, status } =
+                response.body.data.UpdateTodo;
+
+            expect(createdTodo.id).toStrictEqual(id);
+            expect(name).toStrictEqual(createdTodo.name);
+            expect(description).toStrictEqual(createdTodo.description);
+            expect(status).not.toStrictEqual(createdTodo.status);
+            expect(status).toStrictEqual('PROGRESS');
+        });
     });
 
     afterAll(async () => {
