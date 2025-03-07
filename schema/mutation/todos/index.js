@@ -1,5 +1,6 @@
 const { GraphQLNonNull, GraphQLBoolean } = require('graphql');
 const TodoModel = require('../../../models/Todo');
+const { TOTAL_DOC_LIMIT } = require('../../../config/constants');
 const CustomError = require('../../../common/CustomError');
 const {
     CreateTodoInput,
@@ -17,6 +18,14 @@ const CreateTodo = {
     },
     resolve: async (parent, args) => {
         try {
+            const totalDocs = await TodoModel.countDocuments();
+
+            if (totalDocs >= TOTAL_DOC_LIMIT)
+                throw new CustomError(
+                    'Total documents create limit reached!',
+                    400
+                );
+
             const {
                 createTodoInput: { name, description, status }
             } = args;

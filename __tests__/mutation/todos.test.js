@@ -1,7 +1,7 @@
 const request = require('supertest');
 const initExpressApolloApp = require('../../app');
 const { TEST_DB_URL } = require('../../config/env');
-const { API_URL } = require('../../config/constants');
+const { API_URL, TOTAL_DOC_LIMIT } = require('../../config/constants');
 const { connectMongoDB, disconnectMongoDB } = require('../../db');
 const TodosModel = require('../../models/Todo');
 
@@ -16,6 +16,45 @@ describe('TODOS MUTATIONS SUITE', () => {
     });
 
     describe('MUTATION CreateTodo', () => {
+        it(`Should not create more than ${TOTAL_DOC_LIMIT} documents`, async () => {
+            await TodosModel.insertMany(
+                Array(TOTAL_DOC_LIMIT)
+                    .fill(0)
+                    .map((_, idx) => idx + 1)
+                    .map(item => {
+                        return {
+                            name: `Todo ${item} name`,
+                            description: `Todo ${item} description`,
+                            status: `pending`
+                        };
+                    })
+            );
+
+            const query = `
+                    mutation CreateTodo {
+                        CreateTodo (createTodoInput: { name: "Real task", description: "Real task description", status: PENDING }) {
+                            id,
+                            name,
+                            description,
+                            status
+                        }
+                    }
+                `;
+
+            const response = await request(app).post(API_URL).send({ query });
+
+            expect(response.status).toStrictEqual(200);
+            expect(response.body.data).toBeNull();
+            expect(response.body).toHaveProperty('errors');
+            expect(response.body.errors).toEqual(
+                expect.arrayContaining([
+                    {
+                        message: 'Total documents create limit reached!'
+                    }
+                ])
+            );
+        });
+
         it('Should not create todo if input values are missing', async () => {
             const query = `
                     mutation CreateTodo {
@@ -316,6 +355,10 @@ describe('TODOS MUTATIONS SUITE', () => {
             expect(status).not.toStrictEqual(createdTodo.status);
             expect(status).toStrictEqual('PROGRESS');
         });
+    });
+
+    afterEach(async () => {
+        await TodosModel.deleteMany({});
     });
 
     afterAll(async () => {
