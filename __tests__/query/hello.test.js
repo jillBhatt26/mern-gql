@@ -1,5 +1,6 @@
 const request = require('supertest');
 const initExpressApolloApp = require('../../app');
+const { TEST_DB_URL } = require('../../config/env');
 const { API_URL } = require('../../config/constants');
 
 describe('SETUP TESTS', () => {
@@ -7,7 +8,7 @@ describe('SETUP TESTS', () => {
         let app;
 
         beforeAll(async () => {
-            app = await initExpressApolloApp();
+            app = await initExpressApolloApp(TEST_DB_URL);
         });
 
         it('Should query Hello', async () => {

@@ -3,11 +3,11 @@ const { expressMiddleware } = require('@apollo/server/express4');
 const cors = require('cors');
 const express = require('express');
 const { graphqlUploadExpress } = require('graphql-upload');
-const { FE_URL } = require('../config/env');
-const appSession = require('../config/session');
+const { FE_URL, DB_URL, TEST_DB_URL } = require('../config/env');
+const initAppSession = require('../config/session');
 const schema = require('../schema');
 
-const initExpressApolloApp = async () => {
+const initExpressApolloApp = async (session_DB_URL = DB_URL) => {
     const app = express();
 
     app.use(
@@ -22,7 +22,7 @@ const initExpressApolloApp = async () => {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
-    app.use(appSession);
+    app.use(initAppSession(session_DB_URL));
 
     app.use(
         graphqlUploadExpress({

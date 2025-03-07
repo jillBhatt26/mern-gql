@@ -13,7 +13,7 @@ describe('TODOS QUERY SUITE', () => {
     beforeAll(async () => {
         conn = await connectMongoDB(TEST_DB_URL);
 
-        app = await initExpressApolloApp();
+        app = await initExpressApolloApp(TEST_DB_URL);
     });
 
     beforeEach(async () => {
