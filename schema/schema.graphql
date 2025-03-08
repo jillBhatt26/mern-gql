@@ -1,0 +1,77 @@
+type FileType {
+  filename: String!
+  mimetype: String!
+  encoding: String!
+}
+
+type Query {
+  hello: String!
+  todos: [Todo]!
+  todo(id: ID!): Todo
+  FetchActiveUser: UserInfoType
+}
+
+type Todo {
+  id: ID!
+  name: String!
+  description: String!
+  status: EnumTodoStatus
+}
+
+enum EnumTodoStatus {
+  PENDING
+  PROGRESS
+  COMPLETE
+}
+
+type UserInfoType {
+  _id: String!
+  username: String!
+  email: String!
+}
+
+type Mutation {
+  CreateTodo(createTodoInput: CreateTodoInput!): Todo!
+  UpdateTodo(updateTodoInput: UpdateTodoInput!): Todo
+  DeleteTodo(id: ID!): Boolean!
+  UploadFile(file: Upload): FileType
+  LoginUser(loginUserInput: LoginUserInputType!): UserInfoType
+  LogoutUser: Boolean
+  SignupUser(signupUserInput: SignupUserInputType!): UserInfoType
+  UpdateUser(updateUserInput: UpdateUserInputType!): UserInfoType
+  DeleteUser: Boolean!
+}
+
+input CreateTodoInput {
+  name: String!
+  description: String!
+  status: EnumTodoStatus! = PENDING
+}
+
+input UpdateTodoInput {
+  id: ID!
+  name: String
+  description: String
+  status: EnumTodoStatus
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input LoginUserInputType {
+  username: String
+  email: String
+  password: String!
+}
+
+input SignupUserInputType {
+  username: String!
+  email: String!
+  password: String!
+}
+
+input UpdateUserInputType {
+  username: String
+  email: String
+  password: String
+}

@@ -1,4 +1,6 @@
-const { GraphQLSchema } = require('graphql');
+const fs = require('fs');
+const path = require('path');
+const { GraphQLSchema, printSchema } = require('graphql');
 const { applyMiddleware } = require('graphql-middleware');
 const { GraphQLUpload } = require('graphql-upload');
 const mutation = require('./mutation');
@@ -20,5 +22,8 @@ const schemaWithMiddleware = applyMiddleware(
     // All middleware here...
     ...rules
 );
+
+const sdl = printSchema(schemaWithMiddleware);
+fs.writeFileSync(path.resolve(__dirname, 'schema.graphql'), sdl);
 
 module.exports = schemaWithMiddleware;
