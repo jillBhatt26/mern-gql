@@ -559,6 +559,7 @@ describe('USERS MUTATION SUITE', () => {
 
     describe('MUTATION UpdateUser', () => {
         let cookie;
+        let loggedInUser;
 
         beforeEach(async () => {
             userToSignup = await generateUserToSignup();
@@ -568,7 +569,9 @@ describe('USERS MUTATION SUITE', () => {
             const loginQuery = `
                 mutation LoginUser {
                     LoginUser (loginUserInput: { username: "user1", password: "password1"}) {
-                        _id
+                        _id,
+                        username,
+                        email
                     }
                 }
             `;
@@ -587,6 +590,7 @@ describe('USERS MUTATION SUITE', () => {
             expect(loginRes.header['set-cookie'][0]).toContain('connect.sid');
 
             cookie = loginRes.header['set-cookie'];
+            loggedInUser = loginRes.body.data.LoginUser;
         });
 
         it('Should not update an unauthenticated user', async () => {
@@ -615,11 +619,106 @@ describe('USERS MUTATION SUITE', () => {
             );
         });
 
-        it('Should only update the details provided', async () => {});
+        it('Should only update the details provided', async () => {
+            const query = `
+                mutation UpdateUser {
+                    UpdateUser (updateUserInput: { username: "updateUser1" }) {
+                        _id,
+                        username,
+                        email
+                    }
+                }
+            `;
 
-        it('Should update all the details provided', async () => {});
+            expect(loggedInUser).toBeDefined();
+            expect(cookie).toBeDefined();
 
-        it('Should terminate the session once updated', async () => {});
+            const response = await request(app)
+                .post(API_URL)
+                .send({ query })
+                .set('Cookie', cookie);
+
+            expect(response.status).toStrictEqual(200);
+            expect(response.body.errors).toBeUndefined();
+            expect(response.body.data.UpdateUser).toBeDefined();
+
+            const { _id, username, email } = response.body.data.UpdateUser;
+
+            expect(_id).toStrictEqual(loggedInUser._id);
+            expect(username).not.toEqual(loggedInUser.username);
+            expect(email).toStrictEqual(loggedInUser.email);
+        });
+
+        it('Should update all the details provided', async () => {
+            const query = `
+                mutation UpdateUser {
+                    UpdateUser (updateUserInput: { username: "updateUser1", email: "updateUser1@email.com", password: "updatePassword1" }) {
+                        _id,
+                        username,
+                        email
+                    }
+                }
+            `;
+
+            expect(loggedInUser).toBeDefined();
+            expect(cookie).toBeDefined();
+
+            const response = await request(app)
+                .post(API_URL)
+                .send({ query })
+                .set('Cookie', cookie);
+
+            expect(response.status).toStrictEqual(200);
+            expect(response.body.errors).toBeUndefined();
+            expect(response.body.data.UpdateUser).toBeDefined();
+
+            const { _id, username, email } = response.body.data.UpdateUser;
+
+            expect(_id).toStrictEqual(loggedInUser._id);
+            expect(username).not.toEqual(loggedInUser.username);
+            expect(email).not.toStrictEqual(loggedInUser.email);
+        });
+
+        it('Should terminate the session once updated', async () => {
+            const updateUserQuery = `
+                mutation UpdateUser {
+                    UpdateUser (updateUserInput: { username: "updateUser1", email: "updateUser1@email.com", password: "updatePassword1" }) {
+                        _id,
+                        username,
+                        email
+                    }
+                }
+            `;
+
+            expect(loggedInUser).toBeDefined();
+            expect(cookie).toBeDefined();
+
+            const updateUserResponse = await request(app)
+                .post(API_URL)
+                .send({ query: updateUserQuery })
+                .set('Cookie', cookie);
+
+            expect(updateUserResponse.status).toStrictEqual(200);
+            expect(updateUserResponse.body.errors).toBeUndefined();
+            expect(updateUserResponse.body.data.UpdateUser).toBeDefined();
+
+            // NOTE: Fire the same query with / without updated values to see if error prompts to log in again.
+            const secondUpdateResponse = await request(app)
+                .post(API_URL)
+                .send({ query: updateUserQuery })
+                .set('Cookie', cookie);
+
+            expect(secondUpdateResponse.status).toStrictEqual(200);
+            expect(secondUpdateResponse.body.data.UpdateUser).toBeNull();
+            expect(secondUpdateResponse.body.errors).toBeDefined();
+            expect(secondUpdateResponse.body.errors).toStrictEqual(
+                expect.arrayContaining([
+                    {
+                        message: 'You need to login first!'
+                    }
+                ])
+            );
+        });
     });
 
     describe('MUTATION DeleteUser', () => {

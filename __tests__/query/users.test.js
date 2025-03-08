@@ -1,7 +1,7 @@
 const request = require('supertest');
 const initExpressApolloApp = require('../../app');
 const { TEST_DB_URL } = require('../../config/env');
-const { API_URL, TOTAL_DOC_LIMIT } = require('../../config/constants');
+const { API_URL } = require('../../config/constants');
 const { connectMongoDB, disconnectMongoDB } = require('../../db');
 const UserModel = require('../../models/User');
 
