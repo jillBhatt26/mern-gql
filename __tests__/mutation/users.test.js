@@ -481,15 +481,222 @@ describe('USERS MUTATION SUITE', () => {
     });
 
     describe('MUTATION LogoutUser', () => {
-        it('Should log out an authenticated user', async () => {});
+        let userToSignup;
+
+        beforeEach(async () => {
+            userToSignup = await generateUserToSignup();
+
+            await UserModel.create(userToSignup);
+        });
+
+        it('Should check authentication status before log out', async () => {
+            const query = `
+                mutation Logout {
+                    LogoutUser
+                }
+            `;
+
+            expect(userToSignup).toBeDefined();
+
+            const response = await request(app).post(API_URL).send({ query });
+
+            expect(response.status).toStrictEqual(200);
+            expect(response.body).toHaveProperty('data');
+            expect(response.body.data).toHaveProperty('LogoutUser');
+            expect(response.body.data.LogoutUser).toBeNull();
+            expect(response.body).toHaveProperty('errors');
+            expect(response.body.errors).toStrictEqual(
+                expect.arrayContaining([
+                    {
+                        message: 'You need to login first!'
+                    }
+                ])
+            );
+        });
+
+        it('Should log out an authenticated user', async () => {
+            let cookie;
+
+            const loginQuery = `
+                mutation LoginUser {
+                    LoginUser (loginUserInput: { username: "user1", password: "password1"}) {
+                        _id
+                    }
+                }
+            `;
+
+            expect(userToSignup).toBeDefined();
+
+            const loginRes = await request(app)
+                .post(API_URL)
+                .send({ query: loginQuery });
+
+            expect(loginRes.status).toStrictEqual(200);
+            expect(loginRes.body.data.LoginUser).toHaveProperty('_id');
+            expect(loginRes.status).toStrictEqual(200);
+            expect(loginRes.body.data.LoginUser).toHaveProperty('_id');
+            expect(loginRes.header['set-cookie']).toBeDefined();
+            expect(loginRes.header['set-cookie'][0]).toContain('connect.sid');
+
+            cookie = loginRes.header['set-cookie'];
+
+            const logoutQuery = `
+                mutation LogoutUser {
+                    LogoutUser
+                }
+            `;
+
+            const logoutRes = await request(app)
+                .post(API_URL)
+                .send({ query: logoutQuery })
+                .set('Cookie', cookie);
+
+            expect(logoutRes.status).toStrictEqual(200);
+            expect(logoutRes.body.data.errors).toBeUndefined();
+            expect(logoutRes.body.data.LogoutUser).toStrictEqual(true);
+        });
     });
 
     describe('MUTATION UpdateUser', () => {
-        it('Should update an authenticated user', async () => {});
+        let cookie;
+
+        beforeEach(async () => {
+            userToSignup = await generateUserToSignup();
+
+            await UserModel.create(userToSignup);
+
+            const loginQuery = `
+                mutation LoginUser {
+                    LoginUser (loginUserInput: { username: "user1", password: "password1"}) {
+                        _id
+                    }
+                }
+            `;
+
+            expect(userToSignup).toBeDefined();
+
+            const loginRes = await request(app)
+                .post(API_URL)
+                .send({ query: loginQuery });
+
+            expect(loginRes.status).toStrictEqual(200);
+            expect(loginRes.body.data.LoginUser).toHaveProperty('_id');
+            expect(loginRes.status).toStrictEqual(200);
+            expect(loginRes.body.data.LoginUser).toHaveProperty('_id');
+            expect(loginRes.header['set-cookie']).toBeDefined();
+            expect(loginRes.header['set-cookie'][0]).toContain('connect.sid');
+
+            cookie = loginRes.header['set-cookie'];
+        });
+
+        it('Should not update an unauthenticated user', async () => {
+            const query = `
+                mutation UpdateUser {
+                    UpdateUser (updateUserInput: { username: "updateUser1", email: "updateUser1@email.com", password: "updatePassword1" }) {
+                        _id,
+                        username,
+                        email
+                    }
+                }
+            `;
+
+            const response = await request(app).post(API_URL).send({ query });
+
+            expect(response.status).toStrictEqual(200);
+            expect(response.body.data).toHaveProperty('UpdateUser');
+            expect(response.body.data.UpdateUser).toBeNull();
+            expect(response.body.errors).toBeDefined();
+            expect(response.body.errors).toStrictEqual(
+                expect.arrayContaining([
+                    {
+                        message: 'You need to login first!'
+                    }
+                ])
+            );
+        });
+
+        it('Should only update the details provided', async () => {});
+
+        it('Should update all the details provided', async () => {});
+
+        it('Should terminate the session once updated', async () => {});
     });
 
     describe('MUTATION DeleteUser', () => {
-        it('Should delete an authenticated user', async () => {});
+        let cookie;
+
+        beforeEach(async () => {
+            userToSignup = await generateUserToSignup();
+
+            await UserModel.create(userToSignup);
+
+            const loginQuery = `
+                mutation LoginUser {
+                    LoginUser (loginUserInput: { username: "user1", password: "password1"}) {
+                        _id
+                    }
+                }
+            `;
+
+            expect(userToSignup).toBeDefined();
+
+            const loginRes = await request(app)
+                .post(API_URL)
+                .send({ query: loginQuery });
+
+            expect(loginRes.status).toStrictEqual(200);
+            expect(loginRes.body.data.LoginUser).toHaveProperty('_id');
+            expect(loginRes.status).toStrictEqual(200);
+            expect(loginRes.body.data.LoginUser).toHaveProperty('_id');
+            expect(loginRes.header['set-cookie']).toBeDefined();
+            expect(loginRes.header['set-cookie'][0]).toContain('connect.sid');
+
+            cookie = loginRes.header['set-cookie'];
+        });
+
+        it('Should check if user is authenticated', async () => {
+            const query = `
+                mutation DeleteUser {
+                    DeleteUser
+                }
+            `;
+
+            expect(userToSignup).toBeDefined();
+
+            const response = await request(app).post(API_URL).send({ query });
+
+            expect(response.status).toStrictEqual(200);
+            expect(response.body).toHaveProperty('data');
+            expect(response.body.data).toBeNull();
+            expect(response.body).toHaveProperty('errors');
+            expect(response.body.errors).toStrictEqual(
+                expect.arrayContaining([
+                    {
+                        message: 'You need to login first!'
+                    }
+                ])
+            );
+        });
+
+        it('Should delete an existing and authenticated user', async () => {
+            const query = `
+                mutation DeleteUser {
+                    DeleteUser
+                }
+            `;
+
+            expect(userToSignup).toBeDefined();
+
+            const response = await request(app)
+                .post(API_URL)
+                .send({ query })
+                .set('Cookie', cookie);
+
+            expect(response.status).toStrictEqual(200);
+            expect(response.body).toHaveProperty('data');
+            expect(response.body.data.DeleteUser).toStrictEqual(true);
+            expect(response.body.errors).toBeUndefined();
+        });
     });
 
     afterEach(async () => {
