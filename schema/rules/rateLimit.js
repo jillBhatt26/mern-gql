@@ -6,7 +6,7 @@ const rateLimitRule = createRateLimitRule({
     identifyContext: ctx => ctx.req.session.userID
 });
 
-const rateLimiter = rateLimitRule({ window: '1s', max: 5 });
+const rateLimiter = rateLimitRule({ window: '1m', max: 50 });
 
 const rateLimiterRules = shield(
     {

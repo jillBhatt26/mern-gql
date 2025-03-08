@@ -9,12 +9,16 @@ const UserModel = require('../../models/User');
 describe('USERS MUTATION SUITE', () => {
     let conn;
     let app;
-    const generateUserToSignup = async () => {
-        const hashedPassword = await hashPassword('password1');
+    const generateUserToSignup = async (
+        username = 'user1',
+        email = 'user1@email.com',
+        password = 'password1'
+    ) => {
+        const hashedPassword = await hashPassword(password);
 
         const userToSignup = {
-            username: 'user1',
-            email: 'user1@email.com',
+            username,
+            email,
             password: hashedPassword
         };
 
@@ -217,6 +221,49 @@ describe('USERS MUTATION SUITE', () => {
                 expect.arrayContaining([
                     {
                         message: 'You are already logged in!'
+                    }
+                ])
+            );
+        });
+
+        it(`Should only allow ${TOTAL_DOC_LIMIT} users to sign up`, async () => {
+            await UserModel.insertMany(
+                await Promise.all(
+                    Array(TOTAL_DOC_LIMIT)
+                        .fill(0)
+                        .map((_, idx) => idx + 1)
+                        .map(async item => {
+                            const userToSignup = await generateUserToSignup(
+                                `user${item}`,
+                                `user${item}@email.com`,
+                                `password${item}`
+                            );
+
+                            return userToSignup;
+                        })
+                )
+            );
+
+            const query = `
+                mutation Signup {
+                    SignupUser (signupUserInput: { username: "testUser1", email: "testUser1@email.com", password: "password1" }) {
+                        _id
+                    }
+                }
+            `;
+
+            const firstSignupRes = await request(app)
+                .post(API_URL)
+                .send({ query });
+
+            expect(firstSignupRes.status).toStrictEqual(200);
+            expect(firstSignupRes.body.data).toHaveProperty('SignupUser');
+            expect(firstSignupRes.body.data.SignupUser).toBeNull();
+
+            expect(firstSignupRes.body.errors).toStrictEqual(
+                expect.arrayContaining([
+                    {
+                        message: 'Signup new user limit reached!'
                     }
                 ])
             );

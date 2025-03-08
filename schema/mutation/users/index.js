@@ -8,6 +8,7 @@ const {
     UserInfoType,
     UpdateUserInputType
 } = require('../../types/users');
+const { TOTAL_DOC_LIMIT } = require('../../../config/constants');
 
 const destroySession = session =>
     new Promise((resolve, reject) => {
@@ -28,22 +29,27 @@ const SignupUser = {
         }
     },
     resolve: async (parent, args, context) => {
-        const {
-            req: { session }
-        } = context;
-
-        if (session.userID || session.username)
-            throw new CustomError('You are already logged in!', 400);
-
-        const {
-            signupUserInput: { username, email, password }
-        } = args;
-
-        if (!username || !email || !password) {
-            throw new CustomError('Please provide all user details!', 400);
-        }
-
         try {
+            const totalUserDocs = await UserModel.countDocuments({});
+
+            if (totalUserDocs >= TOTAL_DOC_LIMIT)
+                throw new CustomError('Signup new user limit reached!', 400);
+
+            const {
+                req: { session }
+            } = context;
+
+            if (session.userID || session.username)
+                throw new CustomError('You are already logged in!', 400);
+
+            const {
+                signupUserInput: { username, email, password }
+            } = args;
+
+            if (!username || !email || !password) {
+                throw new CustomError('Please provide all user details!', 400);
+            }
+
             const userWithGivenDetails = await UserModel.findOne({
                 $or: [{ username }, { email }]
             });
