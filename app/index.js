@@ -12,7 +12,7 @@ const initExpressApolloApp = async (session_DB_URL = DB_URL) => {
 
     app.use(
         cors({
-            origin: [FE_URL],
+            origin: [FE_URL, 'https://studio.apollographql.com'],
             methods: ['GET', 'POST', 'PUT', 'DELETE'],
             allowedHeaders: ['Content-Type'],
             credentials: true
