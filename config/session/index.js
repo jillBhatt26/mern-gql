@@ -14,6 +14,7 @@ const initAppSession = (mongoUrl = DB_URL) => {
         resave: true,
         store: mongoStore,
         cookie: {
+            httpOnly: NODE_ENV === 'production',
             sameSite: 'none',
             secure: NODE_ENV === 'production'
         }
