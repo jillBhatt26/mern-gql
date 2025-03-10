@@ -5,7 +5,9 @@ const PORT = process.env.PORT ?? 5000;
 const DB_URL = process.env.DB_URL ?? '';
 const TEST_DB_URL = process.env.TEST_DB_URL ?? '';
 const SESSION_SECRET = process.env.SESSION_SECRET ?? 'shhhhh!!!';
-const FE_URL = process.env.FE_URL ?? 'http://localhost:5000/graphql';
+const INTROSPECTION_URL =
+    process.env.INTROSPECTION_URL ?? 'http://localhost:5000/graphql';
+const FE_URL = process.env.FE_URL ?? 'http://localhost:3000';
 
 module.exports = {
     NODE_ENV,
@@ -13,5 +15,6 @@ module.exports = {
     DB_URL,
     TEST_DB_URL,
     SESSION_SECRET,
+    INTROSPECTION_URL,
     FE_URL
 };

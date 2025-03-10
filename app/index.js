@@ -3,7 +3,7 @@ const { expressMiddleware } = require('@apollo/server/express4');
 const cors = require('cors');
 const express = require('express');
 const { graphqlUploadExpress } = require('graphql-upload');
-const { FE_URL, DB_URL } = require('../config/env');
+const { FE_URL, DB_URL, INTROSPECTION_URL } = require('../config/env');
 const initAppSession = require('../config/session');
 const schema = require('../schema');
 
@@ -12,7 +12,7 @@ const initExpressApolloApp = async (session_DB_URL = DB_URL) => {
 
     app.use(
         cors({
-            origin: [FE_URL],
+            origin: [FE_URL, INTROSPECTION_URL],
             methods: ['GET', 'POST', 'PUT', 'DELETE'],
             allowedHeaders: ['Content-Type'],
             credentials: true

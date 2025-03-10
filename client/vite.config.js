@@ -4,11 +4,20 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const port = process.env.VITE_PORT || 3000;
+const NODE_ENV = process.env.VITE_NODE_ENV || 'development';
+const BE_URL = process.env.VITE_BE_URL || `http://localhost:${port}/graphql`;
 
 // https://vite.dev/config/
 export default defineConfig({
     plugins: [react()],
     server: {
-        port
+        port,
+        proxy: {
+            '/graphql': BE_URL
+        }
+    },
+    build: {
+        outDir: 'dist',
+        sourcemap: false
     }
 });

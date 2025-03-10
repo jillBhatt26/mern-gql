@@ -1,30 +1,37 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@apollo/client';
 import AuthContext from '../context';
+import { FETCH_ACTIVE_USER } from '../../../services/query/User';
 
 const AuthContextProvider = ({ children }) => {
     // states
     const [user, setUser] = useState(null);
     const [isFetchingUser, setIsFetchingUser] = useState(true);
-    const [fetchUserError, setFetchUserError] = useState(true);
+    const [fetchUserError, setFetchUserError] = useState(null);
 
-    // callbacks
-    const fetchAuthUserCB = useCallback(async () => {
-        // TODO: Fetch auth details
-        setUser(null);
-
-        try {
-            setIsFetchingUser(true);
-        } catch (error) {
-            setFetchUserError(error.message ?? 'Fetching user info failed!');
-        } finally {
-            setIsFetchingUser(false);
-        }
-    }, []);
+    // hooks
+    const { error, data, loading } = useQuery(FETCH_ACTIVE_USER);
 
     // effects
     useEffect(() => {
-        fetchAuthUserCB();
-    }, [fetchAuthUserCB]);
+        setIsFetchingUser(loading);
+    }, [loading]);
+
+    useEffect(() => {
+        if (error) {
+            const errorMessage = error.toString().split(':').pop();
+
+            console.log('msg: ', errorMessage);
+
+            setFetchUserError(errorMessage);
+        }
+    }, [error]);
+
+    useEffect(() => {
+        if (data && data.FetchActiveUser) {
+            setUser(data.FetchActiveUser);
+        }
+    }, [data]);
 
     const value = useMemo(() => {
         return {

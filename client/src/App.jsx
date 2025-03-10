@@ -1,10 +1,15 @@
+import { ApolloProvider } from '@apollo/client';
+import apolloClient from './config/apollo';
 import AuthContextProvider from './hooks/useAuthContext/provider';
 import AppRoutes from './router/Routes';
+
 const App = () => {
     return (
-        <AuthContextProvider>
-            <AppRoutes />
-        </AuthContextProvider>
+        <ApolloProvider client={apolloClient}>
+            <AuthContextProvider>
+                <AppRoutes />
+            </AuthContextProvider>
+        </ApolloProvider>
     );
 };
 
