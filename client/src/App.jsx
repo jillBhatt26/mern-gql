@@ -1,9 +1,10 @@
-import Nav from './shared/Nav';
+import AuthContextProvider from './hooks/useAuthContext/provider';
+import AppRoutes from './router/Routes';
 const App = () => {
     return (
-        <>
-            <Nav />
-        </>
+        <AuthContextProvider>
+            <AppRoutes />
+        </AuthContextProvider>
     );
 };
 
