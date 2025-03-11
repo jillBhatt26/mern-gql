@@ -34,7 +34,7 @@ jobs:
                   cat .env
 
             - name: Generate client dist
-              run: cd client && yarn install --production=false --frozen-lockfile && yarn build
+              run: cd client && yarn install --frozen-lockfile && yarn build
 
     release:
         runs-on: ubuntu-latest
