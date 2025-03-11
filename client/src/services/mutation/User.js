@@ -11,6 +11,12 @@ const LOGIN_USER = gql`
     }
 `;
 
+const LOGOUT_USER = gql`
+    mutation LogoutUser {
+        LogoutUser
+    }
+`;
+
 const SIGNUP_USER = gql`
     mutation SignupUser($signupUserInput: SignupUserInputType!) {
         SignupUser(signupUserInput: $signupUserInput) {
@@ -37,4 +43,4 @@ const DELETE_USER = gql`
     }
 `;
 
-export { LOGIN_USER, SIGNUP_USER, UPDATE_USER, DELETE_USER };
+export { LOGIN_USER, LOGOUT_USER, SIGNUP_USER, UPDATE_USER, DELETE_USER };

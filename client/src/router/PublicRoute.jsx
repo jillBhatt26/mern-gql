@@ -1,18 +1,33 @@
+import { useEffect, useState } from 'react';
+import { useQuery } from '@apollo/client';
 import { Outlet, Navigate } from 'react-router-dom';
-import useAuthContext from '../hooks/useAuthContext';
 import LoadingPage from '../pages/Loading';
+import { FETCH_ACTIVE_USER } from '../services/query/User';
 
 const PublicRoute = ({ redirectTo = undefined }) => {
+    const [user, setUser] = useState(null);
+    const [isFetchingUser, setIsFetchingUser] = useState(true);
+
     // hooks
-    const { user, isFetchingUser } = useAuthContext();
+    const { data, loading } = useQuery(FETCH_ACTIVE_USER);
 
-    if (isFetchingUser) return <LoadingPage />;
+    // effects
+    useEffect(() => {
+        setIsFetchingUser(loading);
+    }, [loading]);
 
-    return user && redirectTo ? (
-        <Navigate to={redirectTo} replace />
-    ) : (
-        <Outlet />
-    );
+    useEffect(() => {
+        if (data && data.FetchActiveUser) {
+            setUser(data.FetchActiveUser);
+            setIsFetchingUser(false);
+        }
+    }, [data]);
+
+    if (isFetchingUser || loading) return <LoadingPage />;
+
+    if (user && redirectTo) return <Navigate to={redirectTo} replace />;
+
+    return <Outlet />;
 };
 
 export default PublicRoute;

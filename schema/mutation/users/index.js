@@ -162,7 +162,8 @@ const LogoutUser = {
     resolve: async (parent, args, context) => {
         try {
             const {
-                req: { session }
+                req: { session },
+                res
             } = context;
 
             if (!session.userID || !session.username) {
@@ -170,6 +171,8 @@ const LogoutUser = {
             }
 
             let isUserLoggedOut = await destroySession(session);
+
+            res.clearCookie('connect.sid');
 
             return isUserLoggedOut;
         } catch (error) {

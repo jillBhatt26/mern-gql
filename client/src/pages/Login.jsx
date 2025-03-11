@@ -12,31 +12,31 @@ const LoginPage = () => {
     const [loginError, setLoginError] = useState(null);
 
     // hooks
-    const [loginUser, { data, error, loading }] = useMutation(LOGIN_USER, {
+
+    const navigate = useNavigate();
+
+    const [loginUser, { loading }] = useMutation(LOGIN_USER, {
         variables: {
             loginUserInput: {
                 usernameOrEmail: inputUsernameOrEmail,
                 password: inputPassword
             }
+        },
+        onCompleted: data => {
+            if (data && data.LoginUser) {
+                navigate('/', { replace: true });
+            }
+        },
+        onError: error => {
+            if (error) {
+                const errorMessage = error.toString().split(':').pop();
+
+                setLoginError(errorMessage);
+            }
         }
     });
-    const navigate = useNavigate();
 
     // effects
-    useEffect(() => {
-        if (data && data.LoginUser && navigate) {
-            navigate('/', { replace: true });
-        }
-    }, [data, navigate]);
-
-    useEffect(() => {
-        if (error) {
-            const errorMessage = error.toString().split(':').pop();
-
-            setLoginError(errorMessage);
-        }
-    }, [error]);
-
     useEffect(() => {
         setDisableButton(loading || loginError !== null);
     }, [loading, loginError]);

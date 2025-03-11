@@ -1,7 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useQuery } from '@apollo/client';
+import { useMemo, useState } from 'react';
 import AuthContext from '../context';
-import { FETCH_ACTIVE_USER } from '../../../services/query/User';
 
 const AuthContextProvider = ({ children }) => {
     // states
@@ -9,33 +7,14 @@ const AuthContextProvider = ({ children }) => {
     const [isFetchingUser, setIsFetchingUser] = useState(true);
     const [fetchUserError, setFetchUserError] = useState(null);
 
-    // hooks
-    const { error, data, loading } = useQuery(FETCH_ACTIVE_USER);
-
-    // effects
-    useEffect(() => {
-        setIsFetchingUser(loading);
-    }, [loading]);
-
-    useEffect(() => {
-        if (error) {
-            const errorMessage = error.toString().split(':').pop();
-
-            setFetchUserError(errorMessage);
-        }
-    }, [error]);
-
-    useEffect(() => {
-        if (data && data.FetchActiveUser) {
-            setUser(data.FetchActiveUser);
-        }
-    }, [data]);
-
     const value = useMemo(() => {
         return {
             user,
+            setUser,
             isFetchingUser,
-            fetchUserError
+            setIsFetchingUser,
+            fetchUserError,
+            setFetchUserError
         };
     }, [user, isFetchingUser, fetchUserError]);
 

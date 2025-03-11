@@ -1,6 +1,6 @@
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
-const { DB_URL, SESSION_SECRET, NODE_ENV } = require('../env');
+const { DB_URL, SESSION_SECRET, NODE_ENV, FE_URL } = require('../env');
 
 const initAppSession = (mongoUrl = DB_URL) => {
     const mongoStore = new MongoStore({
@@ -15,7 +15,6 @@ const initAppSession = (mongoUrl = DB_URL) => {
         store: mongoStore,
         cookie: {
             httpOnly: NODE_ENV === 'production',
-            sameSite: 'none',
             secure: NODE_ENV === 'production'
         }
     });

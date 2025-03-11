@@ -1,14 +1,32 @@
+import { useEffect, useState } from 'react';
+import { useQuery } from '@apollo/client';
 import { Outlet, Navigate } from 'react-router-dom';
-import useAuthContext from '../hooks/useAuthContext';
 import LoadingPage from '../pages/Loading';
+import { FETCH_ACTIVE_USER } from '../services/query/User';
 
 const PrivateRoute = () => {
+    const [user, setUser] = useState(null);
+    const [isFetchingUser, setIsFetchingUser] = useState(true);
+
     // hooks
-    const { user, isFetchingUser } = useAuthContext();
+    const { data, loading } = useQuery(FETCH_ACTIVE_USER);
 
-    if (isFetchingUser) return <LoadingPage />;
+    // effects
+    useEffect(() => {
+        setIsFetchingUser(loading);
+    }, [loading]);
 
-    return user ? <Outlet /> : <Navigate to="/login" replace />;
+    useEffect(() => {
+        if (data && data.FetchActiveUser) {
+            setUser(data.FetchActiveUser);
+        }
+    }, [data]);
+
+    if (isFetchingUser || loading) return <LoadingPage />;
+
+    if (!isFetchingUser && !user) return <Navigate to="/login" replace />;
+
+    if (!isFetchingUser && user) return <Outlet />;
 };
 
 export default PrivateRoute;

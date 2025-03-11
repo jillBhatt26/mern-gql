@@ -1,15 +1,42 @@
 import { useEffect, useState } from 'react';
+import { useMutation } from '@apollo/client';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { LOGOUT_USER } from '../../services/mutation/User';
+import { FETCH_ACTIVE_USER } from '../../services/query/User';
 
 const Nav = () => {
     // states
     const [navButtonLabel, setNavButtonLabel] = useState('Signup');
+    const [disableNavButton, setDisableNavButton] = useState(false);
 
     // hooks
     const navigate = useNavigate();
     const location = useLocation();
+    const [logoutUser, { loading }] = useMutation(LOGOUT_USER, {
+        onCompleted: data => {
+            if (data && data.LogoutUser) {
+                return navigate('/login', { replace: true });
+            }
+        },
+        onError: () => {
+            navigate('/error', { replace: true });
+        },
+        update: cache => {
+            // NOTE: Most important step. Please clear the FETCH_ACTIVE_USER cache and delete all the data as it will show a logged in user even though the session is deleted in the backend.
+            cache.writeQuery({
+                query: FETCH_ACTIVE_USER,
+                data: {
+                    FetchActiveUser: null
+                }
+            });
+        }
+    });
 
     // effects
+    useEffect(() => {
+        setDisableNavButton(loading);
+    }, [loading]);
+
     useEffect(() => {
         switch (location.pathname) {
             default:
@@ -58,9 +85,7 @@ const Nav = () => {
                 break;
 
             case '/':
-            case '/todos':
-                // TODO: Handle logout
-                navigate('/login');
+                logoutUser();
                 break;
         }
     };
@@ -84,6 +109,7 @@ const Nav = () => {
                     type="button"
                     className="btn btn-info fw-bold"
                     onClick={handleNavButtonClick}
+                    disabled={disableNavButton}
                 >
                     {navButtonLabel}
                 </button>

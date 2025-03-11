@@ -14,14 +14,12 @@ const AppRoutes = () => {
                     <Route path="/" element={<HomePage />} />
                 </Route>
 
-                <Route element={<PublicRoute />}>
-                    <Route path="/error" element={<ErrorPage />} />
-                </Route>
-
-                <Route element={<PublicRoute redirectTo="/todos" />}>
+                <Route element={<PublicRoute redirectTo="/" />}>
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/signup" element={<SignupPage />} />
                 </Route>
+
+                <Route path="/error" element={<ErrorPage />} />
             </Routes>
         </BrowserRouter>
     );
