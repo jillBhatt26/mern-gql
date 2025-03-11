@@ -66,6 +66,8 @@ const initExpressApolloApp = async (session_DB_URL = DB_URL) => {
     );
 
     if (NODE_ENV === 'production') {
+        // '/opt/render/project/src/client/dist/index.html'
+
         app.get('*', (req, res) => {
             res.sendFile(
                 path.join(__dirname, '../', 'client', 'dist', 'index.html')
