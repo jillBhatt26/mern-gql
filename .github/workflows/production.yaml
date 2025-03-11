@@ -1,0 +1,52 @@
+name: Production
+
+on:
+    push:
+        branches: ['main']
+
+    # pull_request:
+    #     types:
+    #         - closed
+    #     branches: ['main']
+
+jobs:
+    client-build:
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                node-version: [20.x]
+
+        env:
+            VITE_BE_URL: ${{secrets.VITE_BE_URL}}
+            VITE_NODE_ENV: ${{secrets.VITE_NODE_ENV}}
+            VITE_PORT: ${{secrets.VITE_PORT}}
+
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Generate env file
+              run: |
+                  touch .env
+                  echo VITE_BE_URL = ${{ env.VITE_BE_URL }} >> .env
+                  echo VITE_NODE_ENV = ${{ env.VITE_NODE_ENV }} >> .env
+                  echo VITE_PORT = ${{ env.VITE_PORT }} >> .env
+                  cat .env
+
+            - name: Generate client dist
+              run: yarn build
+
+    release:
+        runs-on: ubuntu-latest
+
+        needs: client-build
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Deploy
+              # Only run this step if the branch is main
+              if: github.ref == 'refs/heads/main'
+              env:
+                  deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+              run: curl "$deploy_url"
