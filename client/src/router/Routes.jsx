@@ -19,7 +19,7 @@ const AppRoutes = () => {
                     <Route path="/signup" element={<SignupPage />} />
                 </Route>
 
-                <Route path="/error" element={<ErrorPage />} />
+                <Route path="*" element={<ErrorPage />} />
             </Routes>
         </BrowserRouter>
     );

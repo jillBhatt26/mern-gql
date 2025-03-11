@@ -10,7 +10,7 @@ const LoadingPage = () => {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    height: '80vh' // or any other height
+                    height: '80vh'
                 }}
             >
                 <h1 className="text-center">Loading...</h1>
