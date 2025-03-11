@@ -18,5 +18,8 @@ export default defineConfig({
     build: {
         outDir: 'dist',
         sourcemap: false
+    },
+    optimizeDeps: {
+        exclude: ['./src/styles/bootstrap.min.css'] // Disable sourcemap generation for bootstrap css
     }
 });

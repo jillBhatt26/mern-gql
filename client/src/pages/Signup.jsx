@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
 import { SIGNUP_USER } from '../services/mutation/User';
+import { FETCH_ACTIVE_USER } from '../services/query/User';
 import Nav from '../shared/Nav';
 
 const SignupPage = () => {
@@ -15,12 +16,34 @@ const SignupPage = () => {
     // hooks
     const navigate = useNavigate();
 
-    const [signupUser, { data, error, loading }] = useMutation(SIGNUP_USER, {
+    const [signupUser, { loading }] = useMutation(SIGNUP_USER, {
         variables: {
             signupUserInput: {
                 username: inputUsername,
                 email: inputEmail,
                 password: inputPassword
+            }
+        },
+        onCompleted: data => {
+            if (data && data.SignupUser && navigate) {
+                navigate('/', { replace: true });
+            }
+        },
+        onError: error => {
+            if (error) {
+                const errorMessage = error.toString().split(':').pop();
+
+                setSignupError(errorMessage);
+            }
+        },
+        update: (cache, result) => {
+            if (result && result.data && result.data.SignupUser) {
+                cache.writeQuery({
+                    query: FETCH_ACTIVE_USER,
+                    data: {
+                        FetchActiveUser: result.data.SignupUser
+                    }
+                });
             }
         }
     });
@@ -30,20 +53,6 @@ const SignupPage = () => {
         setDisableButton(loading || signupError !== null);
     }, [loading, signupError]);
 
-    useEffect(() => {
-        if (data && data.SignupUser && navigate) {
-            navigate('/', { replace: true });
-        }
-    }, [data, navigate]);
-
-    useEffect(() => {
-        if (error) {
-            const errorMessage = error.toString().split(':').pop();
-
-            setSignupError(errorMessage);
-        }
-    }, [error]);
-
     // event handlers
     const handleUserSignup = e => {
         e.preventDefault();
@@ -52,11 +61,7 @@ const SignupPage = () => {
             setSignupError('All fields required to sign up!');
         }
 
-        signupUser({
-            username: inputUsername,
-            email: inputEmail,
-            password: inputPassword
-        });
+        signupUser();
     };
 
     return (
