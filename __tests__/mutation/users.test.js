@@ -282,7 +282,7 @@ describe('USERS MUTATION SUITE', () => {
         it('Should not perform login with missing values', async () => {
             const query = `
                 mutation Login {
-                    LoginUser (loginUserInput: { username: "" }) {
+                    LoginUser (loginUserInput: { usernameOrEmail: "" }) {
                         _id,
                         username,
                         email
@@ -308,7 +308,7 @@ describe('USERS MUTATION SUITE', () => {
         it('Should not perform login with empty values', async () => {
             const query = `
                 mutation Login {
-                    LoginUser (loginUserInput: { username: "", password: "password1" }) {
+                    LoginUser (loginUserInput: { usernameOrEmail: "", password: "password1" }) {
                         _id,
                         username,
                         email
@@ -334,7 +334,7 @@ describe('USERS MUTATION SUITE', () => {
         it('Should validate if user exists', async () => {
             const query = `
                 mutation Login {
-                    LoginUser (loginUserInput: { username: "user2", password: "password1" }) {
+                    LoginUser (loginUserInput: { usernameOrEmail: "user2", password: "password1" }) {
                         _id,
                         username,
                         email
@@ -360,7 +360,7 @@ describe('USERS MUTATION SUITE', () => {
         it('Should validate if password is correct', async () => {
             const query = `
                 mutation Login {
-                    LoginUser (loginUserInput: { username: "user1", password: "password2" }) {
+                    LoginUser (loginUserInput: { usernameOrEmail: "user1", password: "password2" }) {
                         _id,
                         username,
                         email
@@ -386,7 +386,7 @@ describe('USERS MUTATION SUITE', () => {
         it('Should log an existing user in', async () => {
             const query = `
                 mutation LoginUser {
-                    LoginUser (loginUserInput: { username: "user1", password: "password1"}) {
+                    LoginUser (loginUserInput: { usernameOrEmail: "user1", password: "password1"}) {
                         _id,
                         username,
                         email
@@ -423,7 +423,7 @@ describe('USERS MUTATION SUITE', () => {
 
             const query = `
                 mutation LoginUser {
-                    LoginUser (loginUserInput: { username: "user1", password: "password1"}) {
+                    LoginUser (loginUserInput: { usernameOrEmail: "user1", password: "password1"}) {
                         _id,
                         username,
                         email
@@ -519,7 +519,7 @@ describe('USERS MUTATION SUITE', () => {
 
             const loginQuery = `
                 mutation LoginUser {
-                    LoginUser (loginUserInput: { username: "user1", password: "password1"}) {
+                    LoginUser (loginUserInput: { usernameOrEmail: "user1", password: "password1"}) {
                         _id
                     }
                 }
@@ -568,7 +568,7 @@ describe('USERS MUTATION SUITE', () => {
 
             const loginQuery = `
                 mutation LoginUser {
-                    LoginUser (loginUserInput: { username: "user1", password: "password1"}) {
+                    LoginUser (loginUserInput: { usernameOrEmail: "user1", password: "password1"}) {
                         _id,
                         username,
                         email
@@ -731,7 +731,7 @@ describe('USERS MUTATION SUITE', () => {
 
             const loginQuery = `
                 mutation LoginUser {
-                    LoginUser (loginUserInput: { username: "user1", password: "password1"}) {
+                    LoginUser (loginUserInput: { usernameOrEmail: "user1", password: "password1"}) {
                         _id
                     }
                 }

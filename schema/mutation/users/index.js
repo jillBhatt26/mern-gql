@@ -103,14 +103,10 @@ const LoginUser = {
             }
 
             const {
-                loginUserInput: {
-                    username: inputUsername,
-                    email: inputEmail,
-                    password: inputPassword
-                }
+                loginUserInput: { usernameOrEmail, password: inputPassword }
             } = args;
 
-            if (!inputUsername && !inputEmail) {
+            if (!usernameOrEmail) {
                 throw new CustomError(
                     'Either username or email is required to login',
                     400
@@ -122,7 +118,7 @@ const LoginUser = {
             }
 
             const userToLogin = await UserModel.findOne({
-                $or: [{ username: inputUsername }, { email: inputEmail }]
+                $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }]
             });
 
             if (!userToLogin) {

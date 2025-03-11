@@ -6,11 +6,9 @@ const PrivateRoute = () => {
     // hooks
     const { user, isFetchingUser } = useAuthContext();
 
-    console.log('user: ', user);
-
     if (isFetchingUser) return <LoadingPage />;
 
-    return user ? <Outlet /> : <Navigate to="/error" replace />;
+    return user ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 export default PrivateRoute;

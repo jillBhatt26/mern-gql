@@ -40,11 +40,8 @@ const SignupUserInputType = new GraphQLInputObjectType({
 const LoginUserInputType = new GraphQLInputObjectType({
     name: 'LoginUserInputType',
     fields: {
-        username: {
-            type: GraphQLString
-        },
-        email: {
-            type: GraphQLString
+        usernameOrEmail: {
+            type: new GraphQLNonNull(GraphQLString)
         },
         password: {
             type: new GraphQLNonNull(GraphQLString)

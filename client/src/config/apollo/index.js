@@ -11,7 +11,8 @@ const cache = new InMemoryCache({
 
 const apolloCLient = new ApolloClient({
     uri: BE_URL,
-    cache
+    cache,
+    credentials: 'include'
 });
 
 export default apolloCLient;

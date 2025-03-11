@@ -59,8 +59,7 @@ input UpdateTodoInput {
 scalar Upload
 
 input LoginUserInputType {
-  username: String
-  email: String
+  usernameOrEmail: String!
   password: String!
 }
 

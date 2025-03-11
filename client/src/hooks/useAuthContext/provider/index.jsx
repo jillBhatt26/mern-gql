@@ -21,8 +21,6 @@ const AuthContextProvider = ({ children }) => {
         if (error) {
             const errorMessage = error.toString().split(':').pop();
 
-            console.log('msg: ', errorMessage);
-
             setFetchUserError(errorMessage);
         }
     }, [error]);

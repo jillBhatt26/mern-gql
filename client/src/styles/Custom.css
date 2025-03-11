@@ -1,3 +1,7 @@
 ::placeholder {
     color: #636e72 !important;
 }
+
+button:disabled:hover {
+    cursor: not-allowed;
+}
