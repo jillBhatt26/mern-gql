@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Nav from '../shared/Nav';
 import { LOGIN_USER } from '../services/mutation/User';
+import { FETCH_ACTIVE_USER } from '../services/query/User';
 
 const LoginPage = () => {
     // states
@@ -33,6 +34,14 @@ const LoginPage = () => {
 
                 setLoginError(errorMessage);
             }
+        },
+        update: (cache, result) => {
+            cache.writeQuery({
+                query: FETCH_ACTIVE_USER,
+                data: {
+                    FetchActiveUser: result.data.LoginUser
+                }
+            });
         }
     });
 
@@ -48,7 +57,7 @@ const LoginPage = () => {
         if (!inputUsernameOrEmail || !inputPassword)
             return setLoginError('Please provide all user details to login!');
 
-        loginUser(inputUsernameOrEmail, inputPassword);
+        loginUser();
     };
 
     return (
