@@ -37,7 +37,7 @@ jobs:
               run: cd client && yarn install --frozen-lockfile && yarn build
 
             - name: List client directory files
-              run: ls
+              run: cd client && ls
 
     release:
         runs-on: ubuntu-latest
