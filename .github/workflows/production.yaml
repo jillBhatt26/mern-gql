@@ -36,8 +36,14 @@ jobs:
             - name: Generate client dist
               run: cd client && yarn install --frozen-lockfile && yarn build
 
+            - name: List root directory files
+              run: ls
+
             - name: List client directory files
               run: cd client && ls
+
+            - name: List client/dist directory files
+              run: cd client/dist && ls
 
     release:
         runs-on: ubuntu-latest
