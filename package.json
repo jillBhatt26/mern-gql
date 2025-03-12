@@ -8,7 +8,9 @@
         "prod": "node ./index.js",
         "test": "jest --forceExit --runInBand --detectOpenHandles",
         "test:watch": "jest --forceExit --runInBand --detectOpenHandles --watchAll",
-        "dev:test": "concurrently \"yarn dev\" \"yarn test:watch\""
+        "dev:test": "concurrently \"yarn dev\" \"yarn test:watch\"",
+        "build:client": "cd client && yarn install --frozen-lockfile && yarn build",
+        "build:prod:full": "yarn install --frozen-lockfile && yarn build:client"
     },
     "dependencies": {
         "@apollo/server": "^4.11.3",
