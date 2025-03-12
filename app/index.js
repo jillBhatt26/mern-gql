@@ -4,12 +4,7 @@ const { expressMiddleware } = require('@apollo/server/express4');
 const cors = require('cors');
 const express = require('express');
 const { graphqlUploadExpress } = require('graphql-upload');
-const {
-    FE_URL,
-    DB_URL,
-    INTROSPECTION_URL,
-    NODE_ENV
-} = require('../config/env');
+const { FE_URL, DB_URL, NODE_ENV } = require('../config/env');
 const initAppSession = require('../config/session');
 const schema = require('../schema');
 
@@ -18,12 +13,28 @@ const initExpressApolloApp = async (session_DB_URL = DB_URL) => {
 
     app.use(
         cors({
-            origin: [FE_URL, INTROSPECTION_URL],
+            origin: FE_URL,
             methods: ['GET', 'POST', 'PUT', 'DELETE'],
             allowedHeaders: ['Content-Type'],
             credentials: true
         })
     );
+
+    // Handle preflight requests for all routes
+    app.options(
+        '*',
+        cors({
+            origin: FE_URL,
+            methods: ['GET', 'POST', 'PUT', 'DELETE'],
+            allowedHeaders: ['Content-Type'],
+            credentials: true
+        })
+    );
+
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+
+    if (NODE_ENV === 'production') app.set('trust proxy', 1);
 
     app.use(initAppSession(session_DB_URL));
 
@@ -32,9 +43,6 @@ const initExpressApolloApp = async (session_DB_URL = DB_URL) => {
             express.static(path.resolve(__dirname, '../', 'client', 'dist'))
         );
     }
-
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
 
     app.use(
         graphqlUploadExpress({
@@ -66,8 +74,6 @@ const initExpressApolloApp = async (session_DB_URL = DB_URL) => {
     );
 
     if (NODE_ENV === 'production') {
-        // '/opt/render/project/src/client/dist/index.html'
-
         app.get('*', (req, res) => {
             res.sendFile(
                 path.join(__dirname, '../', 'client', 'dist', 'index.html')
