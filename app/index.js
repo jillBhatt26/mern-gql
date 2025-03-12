@@ -21,15 +21,15 @@ const initExpressApolloApp = async (session_DB_URL = DB_URL) => {
     );
 
     // Handle preflight requests for all routes
-    app.options(
-        '*',
-        cors({
-            origin: FE_URL,
-            methods: ['GET', 'POST', 'PUT', 'DELETE'],
-            allowedHeaders: ['Content-Type'],
-            credentials: true
-        })
-    );
+    // app.options(
+    //     '*',
+    //     cors({
+    //         origin: FE_URL,
+    //         methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    //         allowedHeaders: ['Content-Type'],
+    //         credentials: true
+    //     })
+    // );
 
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
