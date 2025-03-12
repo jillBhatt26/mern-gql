@@ -36,7 +36,7 @@ const initExpressApolloApp = async (session_DB_URL = DB_URL) => {
 
     if (NODE_ENV === 'production') app.set('trust proxy', 1);
 
-    app.use(initAppSession(app, session_DB_URL));
+    app.use(initAppSession(session_DB_URL));
 
     if (NODE_ENV === 'production') {
         app.use(
