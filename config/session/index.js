@@ -2,7 +2,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const { DB_URL, SESSION_SECRET, NODE_ENV } = require('../env');
 
-const initAppSession = (mongoUrl = DB_URL) => {
+const initAppSession = (app, mongoUrl = DB_URL) => {
     const mongoStore = new MongoStore({
         collectionName: 'sessions',
         mongoUrl
