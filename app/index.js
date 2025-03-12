@@ -25,6 +25,8 @@ const initExpressApolloApp = async (session_DB_URL = DB_URL) => {
         })
     );
 
+    app.use(initAppSession(session_DB_URL));
+
     if (NODE_ENV === 'production') {
         app.use(
             express.static(path.resolve(__dirname, '../', 'client', 'dist'))
@@ -33,8 +35,6 @@ const initExpressApolloApp = async (session_DB_URL = DB_URL) => {
 
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
-
-    app.use(initAppSession(session_DB_URL));
 
     app.use(
         graphqlUploadExpress({
