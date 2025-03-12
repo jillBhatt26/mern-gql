@@ -1,9 +1,5 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import dotenv from 'dotenv';
-import { resolve } from 'path';
-
-dotenv.config({ path: resolve(__dirname, '../.env') });
 
 const port = process.env.VITE_PORT || 3000;
 const BE_URL = process.env.VITE_BE_URL || `http://localhost:5000/graphql`;
