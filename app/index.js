@@ -20,21 +20,10 @@ const initExpressApolloApp = async (session_DB_URL = DB_URL) => {
         })
     );
 
-    // Handle preflight requests for all routes
-    // app.options(
-    //     '*',
-    //     cors({
-    //         origin: FE_URL,
-    //         methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    //         allowedHeaders: ['Content-Type'],
-    //         credentials: true
-    //     })
-    // );
-
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
-    if (NODE_ENV === 'production') app.set('trust proxy', 1);
+    // if (NODE_ENV === 'production') app.set('trust proxy', 1);
 
     app.use(initAppSession(session_DB_URL));
 
