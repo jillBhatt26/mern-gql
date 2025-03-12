@@ -23,7 +23,8 @@ const initExpressApolloApp = async (session_DB_URL = DB_URL) => {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
-    // if (NODE_ENV === 'production') app.set('trust proxy', 1);
+    // NOTE: Most important with the perspective of cookies session on public suffixes.
+    if (NODE_ENV === 'production') app.set('trust proxy', 1);
 
     app.use(initAppSession(session_DB_URL));
 
