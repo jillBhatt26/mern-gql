@@ -6,8 +6,7 @@ const authRules = shield(
     {
         Query: {
             '*': authMiddleware,
-            todos: allow,
-            todo: allow
+            hello: allow
         },
         Mutation: {
             '*': authMiddleware,

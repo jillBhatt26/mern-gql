@@ -7,6 +7,8 @@ const {
     GraphQLList,
     GraphQLInputObjectType
 } = require('graphql');
+const CustomError = require('../../../common/CustomError');
+const UserModel = require('../../../models/User');
 
 const todoID = new GraphQLNonNull(GraphQLID);
 
@@ -25,6 +27,21 @@ const EnumTodoStatus = new GraphQLEnumType({
     }
 });
 
+const TodoUserInfo = new GraphQLObjectType({
+    name: 'TodoUserInfo',
+    fields: {
+        _id: {
+            type: new GraphQLNonNull(GraphQLID)
+        },
+        username: {
+            type: new GraphQLNonNull(GraphQLString)
+        },
+        email: {
+            type: new GraphQLNonNull(GraphQLString)
+        }
+    }
+});
+
 const Todo = new GraphQLObjectType({
     name: 'Todo',
     fields: {
@@ -39,6 +56,31 @@ const Todo = new GraphQLObjectType({
         },
         status: {
             type: EnumTodoStatus
+        },
+        user: {
+            type: new GraphQLNonNull(TodoUserInfo),
+            resolve: async parent => {
+                try {
+                    const user = await UserModel.findById(parent.userID, {
+                        password: 0
+                    });
+
+                    const { _id, email, username } = user;
+
+                    return {
+                        _id,
+                        email,
+                        username
+                    };
+                } catch (error) {
+                    if (error instanceof CustomError) throw error;
+
+                    throw new CustomError(
+                        'Failed to fetch user details from task!',
+                        500
+                    );
+                }
+            }
         }
     }
 });

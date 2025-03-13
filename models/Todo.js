@@ -20,6 +20,11 @@ const TodoSchema = new Schema(
             trim: true,
             required: [true, 'Todo status is required!'],
             default: 'pending'
+        },
+        userID: {
+            type: Schema.Types.ObjectId,
+            ref: 'users',
+            required: true
         }
     },
     { timestamps: true }

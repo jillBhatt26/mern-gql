@@ -16,8 +16,15 @@ const CreateTodo = {
             type: new GraphQLNonNull(CreateTodoInput)
         }
     },
-    resolve: async (parent, args) => {
+    resolve: async (parent, args, context) => {
         try {
+            const {
+                req: { session }
+            } = context;
+
+            if (!session || !session.userID || !session.username)
+                throw new CustomError('You need to login first!', 401);
+
             const totalDocs = await TodoModel.countDocuments();
 
             if (totalDocs >= TOTAL_DOC_LIMIT)
@@ -40,7 +47,8 @@ const CreateTodo = {
             const newTodo = await TodoModel.create({
                 name,
                 description,
-                status
+                status,
+                userID: session.userID
             });
 
             return newTodo;
@@ -60,12 +68,19 @@ const UpdateTodo = {
             type: new GraphQLNonNull(UpdateTodoInput)
         }
     },
-    resolve: async (parents, args) => {
-        const {
-            updateTodoInput: { id, name, description, status }
-        } = args;
-
+    resolve: async (parents, args, context) => {
         try {
+            const {
+                req: { session }
+            } = context;
+
+            if (!session || !session.userID || !session.username)
+                throw new CustomError('You need to login first!', 401);
+
+            const {
+                updateTodoInput: { id, name, description, status }
+            } = args;
+
             const todoToUpdate = await TodoModel.findById(id);
 
             if (!todoToUpdate)
@@ -100,8 +115,15 @@ const DeleteTodo = {
             type: todoID
         }
     },
-    resolve: async (parents, args) => {
+    resolve: async (parents, args, context) => {
         try {
+            const {
+                req: { session }
+            } = context;
+
+            if (!session || !session.userID || !session.username)
+                throw new CustomError('You need to login first!', 401);
+
             const todoToDelete = await TodoModel.findById(args.id);
 
             if (!todoToDelete)

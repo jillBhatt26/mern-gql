@@ -4,9 +4,18 @@ const CustomError = require('../../../common/CustomError');
 
 const todosQuery = {
     type: Todos,
-    resolve: async () => {
+    resolve: async (parent, args, context) => {
         try {
-            const todos = await TodoModel.find({});
+            const {
+                req: { session }
+            } = context;
+
+            if (!session || !session.userID || !session.username)
+                throw new CustomError('You need to login first!', 401);
+
+            const { userID } = session;
+
+            const todos = await TodoModel.find({ userID });
 
             return todos;
         } catch (error) {
@@ -25,8 +34,15 @@ const todoQuery = {
             type: todoID
         }
     },
-    resolve: async (parent, args) => {
+    resolve: async (parent, args, context) => {
         try {
+            const {
+                req: { session }
+            } = context;
+
+            if (!session || !session.userID || !session.username)
+                throw new CustomError('You need to login first!', 401);
+
             const todo = await TodoModel.findById(args.id);
 
             if (!todo) {

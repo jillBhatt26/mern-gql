@@ -16,6 +16,7 @@ type Todo {
   name: String!
   description: String!
   status: EnumTodoStatus
+  user: TodoUserInfo!
 }
 
 enum EnumTodoStatus {
@@ -24,10 +25,17 @@ enum EnumTodoStatus {
   COMPLETE
 }
 
+type TodoUserInfo {
+  _id: ID!
+  username: String!
+  email: String!
+}
+
 type UserInfoType {
   _id: String!
   username: String!
   email: String!
+  todos: [Todo]!
 }
 
 type Mutation {

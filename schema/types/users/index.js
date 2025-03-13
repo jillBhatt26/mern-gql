@@ -4,8 +4,40 @@ const {
     GraphQLObjectType,
     GraphQLInputObjectType
 } = require('graphql');
+const CustomError = require('../../../common/CustomError');
+const TodosModel = require('../../../models/Todo');
+const { Todos } = require('../todos');
 
 const UserIDType = new GraphQLNonNull(GraphQLString);
+
+const UserInfoType = new GraphQLObjectType({
+    name: 'UserInfoType',
+    fields: {
+        _id: {
+            type: UserIDType
+        },
+        username: {
+            type: new GraphQLNonNull(GraphQLString)
+        },
+        email: {
+            type: new GraphQLNonNull(GraphQLString)
+        },
+        todos: {
+            type: Todos,
+            resolve: async parent => {
+                try {
+                    const todos = await TodosModel.find({ userID: parent._id });
+
+                    return todos;
+                } catch (error) {
+                    if (error instanceof CustomError) throw error;
+
+                    throw new CustomError('Failed to fetch user todos!', 500);
+                }
+            }
+        }
+    }
+});
 
 const UserType = new GraphQLObjectType({
     name: 'UserType',
@@ -60,21 +92,6 @@ const UpdateUserInputType = new GraphQLInputObjectType({
         },
         password: {
             type: GraphQLString
-        }
-    }
-});
-
-const UserInfoType = new GraphQLObjectType({
-    name: 'UserInfoType',
-    fields: {
-        _id: {
-            type: UserIDType
-        },
-        username: {
-            type: new GraphQLNonNull(GraphQLString)
-        },
-        email: {
-            type: new GraphQLNonNull(GraphQLString)
         }
     }
 });
