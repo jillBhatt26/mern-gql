@@ -1,3 +1,4 @@
+const { GraphQLError } = require('graphql');
 const { shield, allow } = require('graphql-shield');
 const CustomError = require('../../common/CustomError');
 const authMiddleware = require('../../middleware/auth');
@@ -16,11 +17,17 @@ const authRules = shield(
     },
     {
         fallbackError: async (thrownError, parent, args, context, info) => {
-            if (thrownError instanceof CustomError) throw thrownError;
+            if (thrownError instanceof CustomError) {
+                return new GraphQLError(thrownError.message, {
+                    extensions: { code: thrownError.code }
+                });
+            }
 
-            throw new CustomError(
-                thrownError.message ?? 'Something went wrong with auth check!',
-                500
+            return new GraphQLError(
+                thrownError ?? 'Something went wrong with auth check!',
+                {
+                    extensions: { code: 500 }
+                }
             );
         }
     }

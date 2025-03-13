@@ -10,9 +10,8 @@ const FetchActiveUser = {
                 req: { session }
             } = context;
 
-            if (!session.userID || !session.username) {
+            if (!session || !session.userID || !session.username)
                 throw new CustomError('You need to login first!', 401);
-            }
 
             const activeUserInfo = await UserModel.findOne({
                 _id: session.userID,

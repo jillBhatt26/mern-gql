@@ -1,45 +1,35 @@
+const { rule } = require('graphql-shield');
 const CustomError = require('../common/CustomError');
 const UserModel = require('../models/User');
 
-const authMiddleware = async (resolve, parent, args, context, info) => {
+const authMiddleware = async (parent, args, context, info) => {
     try {
         const {
             req: { session }
         } = context;
 
-        if (!session.userID || !session.username) {
-            throw new CustomError('You need to login first!', 401);
-        }
+        if (!session || !session.userID || !session.username)
+            return new CustomError('You need to login first!', 401);
 
-        const authUser = await UserModel.findOne({ _id: userID, username });
+        const authUser = await UserModel.findOne({
+            _id: session.userID,
+            username: session.username
+        });
 
-        if (!authUser) {
-            throw new CustomError(
-                'User not found! Login or signup to proceed.',
-                404
-            );
-        }
-
-        const { _id, username, email } = authUser;
-
-        const argsWithUser = {
-            ...args,
-            user: {
-                _id,
-                username,
-                email
-            }
+        args.user = {
+            _id: session.userID,
+            username: session.username
         };
 
-        return resolve(parent, argsWithUser, context, info);
+        return authUser !== null;
     } catch (error) {
-        if (error instanceof CustomError) throw error;
+        if (error instanceof CustomError) return error;
 
-        throw new CustomError(
-            error.message ?? 'Failed to authenticate the user!',
+        return new CustomError(
+            error ?? 'Failed to authenticate the user!',
             500
         );
     }
 };
 
-module.exports = authMiddleware;
+module.exports = rule('authMiddleware')(authMiddleware);

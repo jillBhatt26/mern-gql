@@ -4,11 +4,16 @@ type FileType {
   encoding: String!
 }
 
-type Query {
-  hello: String!
-  todos: [Todo]!
-  todo(id: ID!): Todo
-  FetchActiveUser: UserInfoType
+input CreateTodoInput {
+  name: String!
+  description: String!
+  status: EnumTodoStatus! = PENDING
+}
+
+enum EnumTodoStatus {
+  PENDING
+  PROGRESS
+  COMPLETE
 }
 
 type Todo {
@@ -19,41 +24,10 @@ type Todo {
   user: TodoUserInfo!
 }
 
-enum EnumTodoStatus {
-  PENDING
-  PROGRESS
-  COMPLETE
-}
-
 type TodoUserInfo {
   _id: ID!
   username: String!
   email: String!
-}
-
-type UserInfoType {
-  _id: String!
-  username: String!
-  email: String!
-  todos: [Todo]!
-}
-
-type Mutation {
-  CreateTodo(createTodoInput: CreateTodoInput!): Todo!
-  UpdateTodo(updateTodoInput: UpdateTodoInput!): Todo
-  DeleteTodo(id: ID!): Boolean!
-  UploadFile(file: Upload): FileType
-  LoginUser(loginUserInput: LoginUserInputType!): UserInfoType
-  LogoutUser: Boolean
-  SignupUser(signupUserInput: SignupUserInputType!): UserInfoType
-  UpdateUser(updateUserInput: UpdateUserInputType!): UserInfoType
-  DeleteUser: Boolean!
-}
-
-input CreateTodoInput {
-  name: String!
-  description: String!
-  status: EnumTodoStatus! = PENDING
 }
 
 input UpdateTodoInput {
@@ -62,9 +36,6 @@ input UpdateTodoInput {
   description: String
   status: EnumTodoStatus
 }
-
-"""The `Upload` scalar type represents a file upload."""
-scalar Upload
 
 input LoginUserInputType {
   usernameOrEmail: String!
@@ -82,3 +53,38 @@ input UpdateUserInputType {
   email: String
   password: String
 }
+
+type UserInfoType {
+  _id: String!
+  username: String!
+  email: String!
+  todos: [Todo]!
+}
+
+type UserType {
+  username: String!
+  email: String!
+  password: String!
+}
+
+type Query {
+  hello: String!
+  todos: [Todo]!
+  todo(id: ID!): Todo
+  FetchActiveUser: UserInfoType
+}
+
+type Mutation {
+  CreateTodo(createTodoInput: CreateTodoInput!): Todo!
+  UpdateTodo(updateTodoInput: UpdateTodoInput!): Todo
+  DeleteTodo(id: ID!): Boolean!
+  UploadFile(file: Upload): FileType
+  LoginUser(loginUserInput: LoginUserInputType!): UserInfoType
+  LogoutUser: Boolean
+  SignupUser(signupUserInput: SignupUserInputType!): UserInfoType
+  UpdateUser(updateUserInput: UpdateUserInputType!): UserInfoType
+  DeleteUser: Boolean!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload

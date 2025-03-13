@@ -56,6 +56,11 @@ const initExpressApolloApp = async (session_DB_URL = DB_URL) => {
 
     await apolloServer.start();
 
+    if (NODE_ENV === 'production')
+        app.get('/graphql', (_, res) => {
+            return res.status(404).redirect('/error');
+        });
+
     app.use(
         '/graphql',
         expressMiddleware(apolloServer, {
