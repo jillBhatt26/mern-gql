@@ -1,13 +1,33 @@
 const request = require('supertest');
+const { hash: hashPassword } = require('argon2');
 const initExpressApolloApp = require('../../app');
 const { TEST_DB_URL } = require('../../config/env');
 const { API_URL, TOTAL_DOC_LIMIT } = require('../../config/constants');
 const { connectMongoDB, disconnectMongoDB } = require('../../db');
 const TodosModel = require('../../models/Todo');
+const UserModel = require('../../models/User');
 
 describe('TODOS MUTATIONS SUITE', () => {
     let conn;
     let app;
+    let cookie;
+    let loggedInUserID;
+
+    const generateUserToSignup = async (
+        username = 'user1',
+        email = 'user1@email.com',
+        password = 'password1'
+    ) => {
+        const hashedPassword = await hashPassword(password);
+
+        const userToSignup = {
+            username,
+            email,
+            password: hashedPassword
+        };
+
+        return userToSignup;
+    };
 
     beforeAll(async () => {
         conn = await connectMongoDB(TEST_DB_URL);
@@ -15,7 +35,43 @@ describe('TODOS MUTATIONS SUITE', () => {
         app = await initExpressApolloApp(TEST_DB_URL);
     });
 
+    beforeEach(async () => {
+        userToSignup = await generateUserToSignup();
+
+        await UserModel.create(userToSignup);
+
+        const loginQuery = `
+                        mutation LoginUser {
+                            LoginUser (loginUserInput: { usernameOrEmail: "user1", password: "password1"}) {
+                                _id
+                            }
+                        }
+                    `;
+
+        expect(userToSignup).toBeDefined();
+
+        const loginRes = await request(app)
+            .post(API_URL)
+            .send({ query: loginQuery });
+
+        expect(loginRes.status).toStrictEqual(200);
+        expect(loginRes.body.data.LoginUser).toHaveProperty('_id');
+        expect(loginRes.status).toStrictEqual(200);
+        expect(loginRes.body.data.LoginUser).toHaveProperty('_id');
+        expect(loginRes.header['set-cookie']).toBeDefined();
+        expect(loginRes.header['set-cookie'][0]).toContain('connect.sid');
+
+        loggedInUserID = loginRes.body.data.LoginUser._id;
+
+        cookie = loginRes.header['set-cookie'];
+    });
+
     describe('MUTATION CreateTodo', () => {
+        beforeEach(() => {
+            expect(loggedInUserID).toBeDefined();
+            expect(cookie).toBeDefined();
+        });
+
         it(`Should not create more than ${TOTAL_DOC_LIMIT} documents`, async () => {
             await TodosModel.insertMany(
                 Array(TOTAL_DOC_LIMIT)
@@ -25,7 +81,8 @@ describe('TODOS MUTATIONS SUITE', () => {
                         return {
                             name: `Todo ${item} name`,
                             description: `Todo ${item} description`,
-                            status: `pending`
+                            status: `pending`,
+                            userID: loggedInUserID
                         };
                     })
             );
@@ -41,7 +98,10 @@ describe('TODOS MUTATIONS SUITE', () => {
                     }
                 `;
 
-            const response = await request(app).post(API_URL).send({ query });
+            const response = await request(app)
+                .post(API_URL)
+                .send({ query })
+                .set('Cookie', cookie);
 
             expect(response.status).toStrictEqual(200);
             expect(response.body.data).toBeNull();
@@ -67,7 +127,10 @@ describe('TODOS MUTATIONS SUITE', () => {
                     }
                 `;
 
-            const response = await request(app).post(API_URL).send({ query });
+            const response = await request(app)
+                .post(API_URL)
+                .send({ query })
+                .set('Cookie', cookie);
 
             expect(response.status).toStrictEqual(400);
             expect(response.body.data).toBeUndefined();
@@ -94,7 +157,10 @@ describe('TODOS MUTATIONS SUITE', () => {
                     }
                 `;
 
-            const response = await request(app).post(API_URL).send({ query });
+            const response = await request(app)
+                .post(API_URL)
+                .send({ query })
+                .set('Cookie', cookie);
 
             expect(response.status).toStrictEqual(200);
             expect(response.body.data).toBeNull();
@@ -121,7 +187,10 @@ describe('TODOS MUTATIONS SUITE', () => {
                     }
                 `;
 
-            const response = await request(app).post(API_URL).send({ query });
+            const response = await request(app)
+                .post(API_URL)
+                .send({ query })
+                .set('Cookie', cookie);
 
             expect(response.status).toStrictEqual(200);
             expect(response.body.data).toBeNull();
@@ -148,7 +217,10 @@ describe('TODOS MUTATIONS SUITE', () => {
                     }
                 `;
 
-            const response = await request(app).post(API_URL).send({ query });
+            const response = await request(app)
+                .post(API_URL)
+                .send({ query })
+                .set('Cookie', cookie);
 
             expect(response.status).toStrictEqual(200);
             expect(response.body).toHaveProperty('data');
@@ -175,7 +247,10 @@ describe('TODOS MUTATIONS SUITE', () => {
                     }
                 `;
 
-            const response = await request(app).post(API_URL).send({ query });
+            const response = await request(app)
+                .post(API_URL)
+                .send({ query })
+                .set('Cookie', cookie);
 
             expect(response.status).toStrictEqual(200);
             expect(response.body).toHaveProperty('data');
@@ -198,7 +273,8 @@ describe('TODOS MUTATIONS SUITE', () => {
         beforeEach(async () => {
             const newTodoModel = await TodosModel.create({
                 name: 'Test task 1',
-                description: 'Test task 1 description'
+                description: 'Test task 1 description',
+                userID: loggedInUserID
             });
 
             expect(newTodoModel).toHaveProperty('_id');
@@ -219,7 +295,10 @@ describe('TODOS MUTATIONS SUITE', () => {
                     }
                 `;
 
-            const response = await request(app).post(API_URL).send({ query });
+            const response = await request(app)
+                .post(API_URL)
+                .send({ query })
+                .set('Cookie', cookie);
 
             expect(response.status).toStrictEqual(200);
             expect(response.body.data).toBeNull();
@@ -240,7 +319,10 @@ describe('TODOS MUTATIONS SUITE', () => {
                     }
                 `;
 
-            const response = await request(app).post(API_URL).send({ query });
+            const response = await request(app)
+                .post(API_URL)
+                .send({ query })
+                .set('Cookie', cookie);
 
             expect(response.status).toStrictEqual(200);
             expect(response.body).toHaveProperty('data');
@@ -254,10 +336,16 @@ describe('TODOS MUTATIONS SUITE', () => {
         let createdTodo;
         const fakeObjectID = '67c9f1fc0bd6317d06a95123';
 
+        beforeEach(() => {
+            expect(loggedInUserID).toBeDefined();
+            expect(cookie).toBeDefined();
+        });
+
         beforeEach(async () => {
             const newTodoModel = await TodosModel.create({
                 name: 'Test task 1',
-                description: 'Test task 1 description'
+                description: 'Test task 1 description',
+                userID: loggedInUserID
             });
 
             expect(newTodoModel).toHaveProperty('_id');
@@ -283,7 +371,10 @@ describe('TODOS MUTATIONS SUITE', () => {
                     }
                 `;
 
-            const response = await request(app).post(API_URL).send({ query });
+            const response = await request(app)
+                .post(API_URL)
+                .send({ query })
+                .set('Cookie', cookie);
 
             expect(response.status).toStrictEqual(200);
             expect(response.body.data.UpdateTodo).toBeNull();
@@ -309,7 +400,10 @@ describe('TODOS MUTATIONS SUITE', () => {
                     }
                 `;
 
-            const response = await request(app).post(API_URL).send({ query });
+            const response = await request(app)
+                .post(API_URL)
+                .send({ query })
+                .set('Cookie', cookie);
 
             expect(response.status).toStrictEqual(200);
             expect(response.body.errors).toBeUndefined();
@@ -340,7 +434,10 @@ describe('TODOS MUTATIONS SUITE', () => {
                     }
                 `;
 
-            const response = await request(app).post(API_URL).send({ query });
+            const response = await request(app)
+                .post(API_URL)
+                .send({ query })
+                .set('Cookie', cookie);
 
             expect(response.status).toStrictEqual(200);
             expect(response.body.errors).toBeUndefined();
@@ -358,6 +455,7 @@ describe('TODOS MUTATIONS SUITE', () => {
     });
 
     afterEach(async () => {
+        await UserModel.deleteMany({});
         await TodosModel.deleteMany({});
     });
 
