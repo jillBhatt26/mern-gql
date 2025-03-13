@@ -34,7 +34,8 @@ const PublicRoute = ({ redirectTo = undefined }) => {
 
     if (isFetchingUser || loading) return <LoadingPage />;
 
-    if (user && redirectTo) return <Navigate to={redirectTo} replace />;
+    if ((user || authUser) && redirectTo)
+        return <Navigate to={redirectTo} replace />;
 
     return <Outlet />;
 };

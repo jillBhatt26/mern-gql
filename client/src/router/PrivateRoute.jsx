@@ -31,6 +31,8 @@ const PrivateRoute = () => {
         if (user) setAuthUser(user);
     }, [user, setAuthUser]);
 
+    if (authUser) return <Outlet />;
+
     if (isFetchingUser || loading) return <LoadingPage />;
 
     if (!isFetchingUser && !user) return <Navigate to="/login" replace />;

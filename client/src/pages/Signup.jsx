@@ -4,6 +4,7 @@ import { useMutation } from '@apollo/client';
 import { SIGNUP_USER } from '../services/mutation/User';
 import { FETCH_ACTIVE_USER } from '../services/query/User';
 import Nav from '../shared/Nav';
+import useAuthStore from '../stores/auth';
 
 const SignupPage = () => {
     // states
@@ -15,6 +16,7 @@ const SignupPage = () => {
 
     // hooks
     const navigate = useNavigate();
+    const setAuthUser = useAuthStore(state => state.setAuthUser);
 
     const [signupUser, { loading }] = useMutation(SIGNUP_USER, {
         variables: {
@@ -26,7 +28,8 @@ const SignupPage = () => {
         },
         onCompleted: data => {
             if (data && data.SignupUser && navigate) {
-                navigate('/', { replace: true });
+                setAuthUser(data.SignupUser);
+                return navigate('/', { replace: true });
             }
         },
         onError: error => {

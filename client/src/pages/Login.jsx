@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Nav from '../shared/Nav';
 import { LOGIN_USER } from '../services/mutation/User';
 import { FETCH_ACTIVE_USER } from '../services/query/User';
+import useAuthStore from '../stores/auth';
 
 const LoginPage = () => {
     // states
@@ -13,6 +14,7 @@ const LoginPage = () => {
     const [loginError, setLoginError] = useState(null);
 
     // hooks
+    const setAuthUser = useAuthStore(state => state.setAuthUser);
 
     const navigate = useNavigate();
 
@@ -25,7 +27,9 @@ const LoginPage = () => {
         },
         onCompleted: data => {
             if (data && data.LoginUser) {
-                navigate('/', { replace: true });
+                setAuthUser(data.LoginUser);
+
+                return navigate('/', { replace: true });
             }
         },
         onError: error => {
