@@ -3,6 +3,7 @@ import { useMutation } from '@apollo/client';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { LOGOUT_USER } from '../../services/mutation/User';
 import { FETCH_ACTIVE_USER } from '../../services/query/User';
+import useAuthStore from '../../stores/auth';
 
 const Nav = () => {
     // states
@@ -12,9 +13,11 @@ const Nav = () => {
     // hooks
     const navigate = useNavigate();
     const location = useLocation();
+    const unsetAuthUser = useAuthStore(state => state.unsetAuthUser);
     const [logoutUser, { loading }] = useMutation(LOGOUT_USER, {
         onCompleted: data => {
             if (data && data.LogoutUser) {
+                unsetAuthUser();
                 return navigate('/login', { replace: true });
             }
         },

@@ -6,6 +6,12 @@ const FETCH_ACTIVE_USER = gql`
             _id
             username
             email
+            todos {
+                id
+                name
+                description
+                status
+            }
         }
     }
 `;
