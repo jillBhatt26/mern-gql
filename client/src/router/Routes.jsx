@@ -4,7 +4,7 @@ import ErrorPage from '../pages/Error';
 import FilesPage from '../pages/Files';
 import HomePage from '../pages/Home';
 import LoginPage from '../pages/Login';
-import ProfilePage from '../pages/Profile';
+import SettingsPage from '../pages/SettingsPage';
 import SignupPage from '../pages/Signup';
 import PublicRoute from './PublicRoute';
 import PrivateRoute from './PrivateRoute';
@@ -28,7 +28,7 @@ const AppRoutes = () => {
                 {/* Only authenticated users can access*/}
                 <Route element={<PrivateRoute />}>
                     <Route path="/" element={<HomePage />} />
-                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/settings" element={<SettingsPage />} />
                     <Route path="/files" element={<FilesPage />} />
                 </Route>
             </Routes>

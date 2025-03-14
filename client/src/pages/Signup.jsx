@@ -75,6 +75,18 @@ const SignupPage = () => {
             <div className="container mt-5 col-12 col-md-8 col-lg-4">
                 <h1 className="text-center">Sign Up</h1>
 
+                {signupError && (
+                    <div className="alert alert-dismissible alert-danger mt-5">
+                        <button
+                            type="button"
+                            className="btn-close"
+                            onClick={() => setSignupError(null)}
+                        ></button>
+
+                        {signupError}
+                    </div>
+                )}
+
                 <form autoComplete="off" noValidate onSubmit={handleUserSignup}>
                     <div>
                         <label htmlFor="email" className="form-label mt-4">
@@ -126,18 +138,6 @@ const SignupPage = () => {
                             Signup
                         </button>
                     </div>
-
-                    {signupError && (
-                        <div className="alert alert-dismissible alert-danger mt-5">
-                            <button
-                                type="button"
-                                className="btn-close"
-                                onClick={() => setSignupError(null)}
-                            ></button>
-
-                            {signupError}
-                        </div>
-                    )}
                 </form>
             </div>
 

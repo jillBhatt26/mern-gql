@@ -72,6 +72,18 @@ const LoginPage = () => {
             <div className="container mt-5 col-12 col-md-8 col-lg-4">
                 <h1 className="text-center">Log In</h1>
 
+                {loginError && (
+                    <div className="alert alert-dismissible alert-danger mt-5">
+                        <button
+                            type="button"
+                            className="btn-close"
+                            onClick={() => setLoginError(null)}
+                        ></button>
+
+                        {loginError}
+                    </div>
+                )}
+
                 <form autoComplete="off" noValidate onSubmit={handleLogin}>
                     <div>
                         <label
@@ -117,18 +129,6 @@ const LoginPage = () => {
                         </button>
                     </div>
                 </form>
-
-                {loginError && (
-                    <div className="alert alert-dismissible alert-danger mt-5">
-                        <button
-                            type="button"
-                            className="btn-close"
-                            onClick={() => setLoginError(null)}
-                        ></button>
-
-                        {loginError}
-                    </div>
-                )}
             </div>
 
             <Footer />

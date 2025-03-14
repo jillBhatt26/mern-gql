@@ -2,7 +2,7 @@ import UserInfoForm from '../components/UserInfoForm';
 import Nav from '../shared/Nav';
 import Footer from '../shared/Footer';
 
-const ProfilePage = () => {
+const SettingsPage = () => {
     return (
         <>
             <Nav />
@@ -16,4 +16,4 @@ const ProfilePage = () => {
     );
 };
 
-export default ProfilePage;
+export default SettingsPage;
