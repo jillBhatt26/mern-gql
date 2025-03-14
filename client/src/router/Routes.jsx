@@ -4,7 +4,7 @@ import ErrorPage from '../pages/Error';
 import FilesPage from '../pages/Files';
 import HomePage from '../pages/Home';
 import LoginPage from '../pages/Login';
-import SettingsPage from '../pages/SettingsPage';
+import SettingsPage from '../pages/Settings';
 import SignupPage from '../pages/Signup';
 import PublicRoute from './PublicRoute';
 import PrivateRoute from './PrivateRoute';

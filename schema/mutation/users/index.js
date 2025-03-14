@@ -1,6 +1,7 @@
 const { GraphQLNonNull, GraphQLBoolean } = require('graphql');
 const { hash: hashPassword, verify: verifyPassword } = require('argon2');
 const UserModel = require('../../../models/User');
+const TodosModel = require('../../../models/Todo');
 const CustomError = require('../../../common/CustomError');
 const {
     LoginUserInputType,
@@ -295,22 +296,34 @@ const DeleteUser = {
     resolve: async (parent, args, context) => {
         try {
             const {
-                req: { session }
+                req: { session },
+                res
             } = context;
 
             if (!session.userID || !session.username) {
                 throw new CustomError('You need to login first!', 401);
             }
 
-            const userToDelete = await UserModel.findByIdAndDelete(
+            // check if user to be deleted exists
+            const userToBeDeleted = await UserModel.findById(session.userID);
+
+            if (!userToBeDeleted)
+                throw new CustomError('User to be deleted not found!', 404);
+
+            const isLoggedOut = await destroySession(session);
+
+            // Delete all the todos of the user to be deleted first
+            await TodosModel.deleteMany({ userID: session.userID });
+
+            const deletedUser = await UserModel.findByIdAndDelete(
                 session.userID
             );
 
-            if (!userToDelete) {
+            if (!deletedUser) {
                 throw new CustomError('User not deleted!', 400);
             }
 
-            const isLoggedOut = await destroySession(session);
+            res.clearCookie('connect.sid');
 
             return isLoggedOut;
         } catch (error) {

@@ -88,7 +88,7 @@ const UserInfoForm = () => {
     };
 
     return (
-        <div className="container mt-5 col-12 col-md-8 col-lg-4">
+        <>
             <h1 className="text-center">Update User</h1>
 
             {updateUserError && (
@@ -168,7 +168,7 @@ const UserInfoForm = () => {
                     </button>
                 </div>
             </form>
-        </div>
+        </>
     );
 };
 
