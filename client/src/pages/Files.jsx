@@ -1,7 +1,7 @@
 import Nav from '../shared/Nav';
 import Footer from '../shared/Footer';
 
-const AboutPage = () => {
+const FilesPage = () => {
     return (
         <>
             <Nav />
@@ -16,7 +16,7 @@ const AboutPage = () => {
                         height: '80vh'
                     }}
                 >
-                    <h1 className="text-center">About Page</h1>
+                    <h1 className="text-center">Files Page</h1>
                 </div>
             </div>
 
@@ -25,4 +25,4 @@ const AboutPage = () => {
     );
 };
 
-export default AboutPage;
+export default FilesPage;
