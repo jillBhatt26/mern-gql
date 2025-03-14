@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { LOGOUT_USER } from '../../services/mutation/User';
-import { FETCH_ACTIVE_USER } from '../../services/query/User';
-import useAuthStore from '../../stores/auth';
+import { LOGOUT_USER } from '../services/mutation/User';
+import { FETCH_ACTIVE_USER } from '../services/query/User';
+import useAuthStore from '../stores/auth';
 
 const Nav = () => {
     // states
@@ -53,8 +53,18 @@ const Nav = () => {
                 break;
 
             case '/signup':
-            case '/about':
                 setNavButtonLabel('Login');
+                break;
+
+            case '/about':
+                if (
+                    authUser &&
+                    authUser.username &&
+                    authUser._id &&
+                    authUser.email
+                )
+                    setNavButtonLabel('Home');
+                else setNavButtonLabel('Login');
                 break;
 
             case '/error':
@@ -67,7 +77,7 @@ const Nav = () => {
                 setNavButtonLabel('Logout');
                 break;
         }
-    }, [location.pathname]);
+    }, [location.pathname, authUser]);
 
     // event handlers
     const handleNavButtonClick = e => {
@@ -83,8 +93,18 @@ const Nav = () => {
                 break;
 
             case '/signup':
-            case '/about':
                 navigate('/login');
+                break;
+
+            case '/about':
+                if (
+                    authUser &&
+                    authUser.username &&
+                    authUser._id &&
+                    authUser.email
+                )
+                    navigate('/');
+                else navigate('/login');
                 break;
 
             case '/error':
