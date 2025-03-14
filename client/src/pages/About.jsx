@@ -1,11 +1,7 @@
-import { useNavigate } from 'react-router-dom';
 import Nav from '../shared/Nav';
 import Footer from '../shared/Footer';
 
 const ErrorPage = () => {
-    // hooks
-    const navigate = useNavigate();
-
     return (
         <>
             <Nav />
@@ -20,17 +16,7 @@ const ErrorPage = () => {
                         height: '80vh'
                     }}
                 >
-                    <h1 className="text-center">Requested page not found!</h1>
-
-                    <div className="d-grid gap-2 mt-3">
-                        <button
-                            className="btn btn-lg btn-info"
-                            type="button"
-                            onClick={() => navigate('/')}
-                        >
-                            Home
-                        </button>
-                    </div>
+                    <h1 className="text-center">About Page</h1>
                 </div>
             </div>
 

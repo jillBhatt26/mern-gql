@@ -3,6 +3,7 @@ import ErrorPage from '../pages/Error';
 import HomePage from '../pages/Home';
 import LoginPage from '../pages/Login';
 import SignupPage from '../pages/Signup';
+import AboutPage from '../pages/About';
 import PublicRoute from './PublicRoute';
 import PrivateRoute from './PrivateRoute';
 
@@ -20,6 +21,7 @@ const AppRoutes = () => {
                 </Route>
 
                 <Route element={<PublicRoute />}>
+                    <Route path="/about" element={<AboutPage />} />
                     <Route path="*" element={<ErrorPage />} />
                 </Route>
             </Routes>

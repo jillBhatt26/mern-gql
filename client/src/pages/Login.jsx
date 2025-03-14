@@ -2,6 +2,7 @@ import { useMutation } from '@apollo/client';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Nav from '../shared/Nav';
+import Footer from '../shared/Footer';
 import { LOGIN_USER } from '../services/mutation/User';
 import { FETCH_ACTIVE_USER } from '../services/query/User';
 import useAuthStore from '../stores/auth';
@@ -129,6 +130,8 @@ const LoginPage = () => {
                     </div>
                 )}
             </div>
+
+            <Footer />
         </>
     );
 };

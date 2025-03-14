@@ -1,4 +1,5 @@
 import Nav from '../shared/Nav';
+import Footer from '../shared/Footer';
 
 const LoadingPage = () => {
     return (
@@ -15,6 +16,8 @@ const LoadingPage = () => {
             >
                 <h1 className="text-center">Loading...</h1>
             </div>
+
+            <Footer />
         </div>
     );
 };

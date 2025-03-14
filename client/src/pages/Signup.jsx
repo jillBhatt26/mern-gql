@@ -4,6 +4,7 @@ import { useMutation } from '@apollo/client';
 import { SIGNUP_USER } from '../services/mutation/User';
 import { FETCH_ACTIVE_USER } from '../services/query/User';
 import Nav from '../shared/Nav';
+import Footer from '../shared/Footer';
 import useAuthStore from '../stores/auth';
 
 const SignupPage = () => {
@@ -139,6 +140,8 @@ const SignupPage = () => {
                     )}
                 </form>
             </div>
+
+            <Footer />
         </>
     );
 };

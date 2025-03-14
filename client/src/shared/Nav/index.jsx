@@ -52,6 +52,7 @@ const Nav = () => {
                 break;
 
             case '/signup':
+            case '/about':
                 setNavButtonLabel('Login');
                 break;
 
@@ -80,6 +81,7 @@ const Nav = () => {
                 break;
 
             case '/signup':
+            case '/about':
                 navigate('/login');
                 break;
 
