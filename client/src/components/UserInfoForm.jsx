@@ -89,7 +89,7 @@ const UserInfoForm = () => {
 
     return (
         <>
-            <h1 className="text-center">Update User</h1>
+            <h1 className="text-center">Update Account</h1>
 
             {updateUserError && (
                 <div className="alert alert-dismissible alert-danger mt-5">
@@ -164,7 +164,7 @@ const UserInfoForm = () => {
                         type="submit"
                         disabled={disableButton}
                     >
-                        Update user
+                        Update account
                     </button>
                 </div>
             </form>
