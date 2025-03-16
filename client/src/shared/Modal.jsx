@@ -1,14 +1,46 @@
-import { createContext, useContext } from 'react';
+import {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useRef
+} from 'react';
 import { createPortal } from 'react-dom';
 
 const ModalContext = createContext();
 
 const Modal = ({ isOpen, onClose, onConfirm, children, ...props }) => {
+    // refs
+    const modalRef = useRef();
+
+    // callbacks
+    const keyDownHandlerCB = useCallback(
+        e => {
+            if (e.keyCode !== 27) return;
+
+            e.preventDefault();
+
+            onClose();
+        },
+        [onClose]
+    );
+
+    const handleKeyDownCB = useCallback(() => {
+        document.addEventListener('keydown', keyDownHandlerCB);
+
+        return () => document.removeEventListener('keydown', keyDownHandlerCB);
+    }, [keyDownHandlerCB]);
+
+    // effects
+    useEffect(() => {
+        handleKeyDownCB();
+    }, [handleKeyDownCB]);
+
     return createPortal(
         <>
             {isOpen && (
                 <div className="dialog-overlay" {...props}>
-                    <div className="dialog-container bg-primary">
+                    <div className="dialog-container bg-primary" ref={modalRef}>
                         <ModalContext.Provider value={{ onClose, onConfirm }}>
                             {children}
                         </ModalContext.Provider>
