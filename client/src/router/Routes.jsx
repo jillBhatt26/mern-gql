@@ -1,5 +1,6 @@
-import { lazy } from 'react';
+import { lazy, Suspense } from 'react';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import LoadingPage from '../pages/Loading';
 
 const AboutPage = lazy(() => import('../pages/About'));
 const ErrorPage = lazy(() => import('../pages/Error'));
@@ -17,21 +18,70 @@ const AppRoutes = () => {
             <Routes>
                 {/* Anyone can access */}
                 <Route element={<PublicRoute />}>
-                    <Route path="/about" element={<AboutPage />} />
-                    <Route path="*" element={<ErrorPage />} />
+                    <Route
+                        path="/about"
+                        element={
+                            <Suspense fallback={<LoadingPage />}>
+                                <AboutPage />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="*"
+                        element={
+                            <Suspense fallback={<LoadingPage />}>
+                                <ErrorPage />
+                            </Suspense>
+                        }
+                    />
                 </Route>
 
                 {/* Anyone can access but not authenticated users*/}
                 <Route element={<PublicRoute redirectTo="/" />}>
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/signup" element={<SignupPage />} />
+                    <Route
+                        path="/login"
+                        element={
+                            <Suspense fallback={<LoadingPage />}>
+                                <LoginPage />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/signup"
+                        element={
+                            <Suspense fallback={<LoadingPage />}>
+                                <SignupPage />
+                            </Suspense>
+                        }
+                    />
                 </Route>
 
                 {/* Only authenticated users can access*/}
                 <Route element={<PrivateRoute />}>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/settings" element={<SettingsPage />} />
-                    <Route path="/files" element={<FilesPage />} />
+                    <Route
+                        path="/"
+                        element={
+                            <Suspense fallback={<LoadingPage />}>
+                                <HomePage />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/settings"
+                        element={
+                            <Suspense fallback={<LoadingPage />}>
+                                <SettingsPage />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/files"
+                        element={
+                            <Suspense fallback={<LoadingPage />}>
+                                <FilesPage />
+                            </Suspense>
+                        }
+                    />
                 </Route>
             </Routes>
         </BrowserRouter>

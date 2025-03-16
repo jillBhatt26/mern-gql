@@ -1,1 +1,0 @@
-import{j as e}from"./index-BwmDE6J8.js";import{N as s,F as r}from"./Footer-Dm3DVUD_.js";const o=()=>e.jsxs(e.Fragment,{children:[e.jsx(s,{}),e.jsx("div",{className:"container",children:e.jsx("h1",{className:"text-center",children:"Home Page"})}),e.jsx(r,{})]});export{o as default};
