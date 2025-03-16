@@ -2,6 +2,7 @@ type FileType {
   filename: String!
   mimetype: String!
   encoding: String!
+  newFileName: String!
 }
 
 input CreateTodoInput {

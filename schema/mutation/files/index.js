@@ -3,6 +3,8 @@ const path = require('path');
 const { GraphQLUpload } = require('graphql-upload');
 const { finished } = require('stream/promises');
 const { v4: uuidV4 } = require('uuid');
+const CloudStorage = require('../../../common/CloudStorage');
+const CustomError = require('../../../common/CustomError');
 const { FileType } = require('../../types/files');
 
 const pathToUploadsDir = path.resolve(
@@ -28,7 +30,7 @@ const UploadFile = {
             const allowedExts = ['.jpg', '.jpeg', '.png', '.gif'];
 
             if (!allowedExts.includes(ext)) {
-                throw new Error('Unsupported file type provided');
+                throw new CustomError('Unsupported file type provided', 400);
             }
 
             const newFileName = `${uuidV4()}${ext}`;
@@ -40,9 +42,20 @@ const UploadFile = {
             createReadStream().pipe(out);
             await finished(out);
 
-            return { filename, mimetype, encoding };
+            const cloudStorage = new CloudStorage();
+
+            const data = await cloudStorage.upload(newFileName);
+
+            console.log('file upload data: ', data);
+
+            return { filename, mimetype, encoding, newFileName };
         } catch (error) {
-            return new Error(error.message ?? 'Failed to upload file!');
+            if (error instanceof CustomError) return error;
+
+            return new CustomError(
+                error.message ?? 'Failed to upload file!',
+                500
+            );
         }
     }
 };

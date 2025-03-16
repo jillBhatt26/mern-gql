@@ -19,6 +19,9 @@ const FileType = new GraphQLObjectType({
         },
         encoding: {
             type: new GraphQLNonNull(GraphQLString)
+        },
+        newFileName: {
+            type: new GraphQLNonNull(GraphQLString)
         }
     }
 });

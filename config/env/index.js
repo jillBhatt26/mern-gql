@@ -8,6 +8,8 @@ const SESSION_SECRET = process.env.SESSION_SECRET ?? 'shhhhh!!!';
 const INTROSPECTION_URL =
     process.env.INTROSPECTION_URL ?? 'http://localhost:5000/graphql';
 const FE_URL = process.env.FE_URL ?? 'http://localhost:3000';
+const SUPABASE_PROJECT_URL = process.env.SUPABASE_PROJECT_URL ?? '';
+const SUPABASE_API_KEY = process.env.SUPABASE_API_KEY ?? '';
 
 module.exports = {
     NODE_ENV,
@@ -16,5 +18,7 @@ module.exports = {
     TEST_DB_URL,
     SESSION_SECRET,
     INTROSPECTION_URL,
-    FE_URL
+    FE_URL,
+    SUPABASE_API_KEY,
+    SUPABASE_PROJECT_URL
 };
