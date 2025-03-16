@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import UserInfoForm from '../components/UserInfoForm';
+import DeleteAccountModal from '../components/DeleteAccountModal';
 import { DELETE_USER } from '../services/mutation/User';
 import { FETCH_ACTIVE_USER } from '../services/query/User';
 import Nav from '../shared/Nav';
@@ -12,6 +13,8 @@ const SettingsPage = () => {
     // states
     const [deleteUserError, setDeleteUserError] = useState(null);
     const [disableDeleteButton, setDisableDeleteButton] = useState(false);
+    const [showDeleteUserConfirmModal, setShowDeleteUserConfirmModal] =
+        useState(false);
 
     // hooks
     const navigate = useNavigate();
@@ -75,10 +78,10 @@ const SettingsPage = () => {
                     <div className="d-grid my-3">
                         <button
                             type="button"
-                            className={`btn btn-lg btn-danger ${
+                            className={`btn btn-lg btn-outline-danger border-danger ${
                                 disableDeleteButton && 'disabled'
                             }`}
-                            onClick={handleDeleteUser}
+                            onClick={() => setShowDeleteUserConfirmModal(true)}
                             disabled={disableDeleteButton}
                         >
                             Delete account
@@ -88,6 +91,12 @@ const SettingsPage = () => {
             </div>
 
             <Footer />
+
+            <DeleteAccountModal
+                showDeleteUserConfirmModal={showDeleteUserConfirmModal}
+                setShowDeleteUserConfirmModal={setShowDeleteUserConfirmModal}
+                handleDeleteUser={handleDeleteUser}
+            />
         </>
     );
 };

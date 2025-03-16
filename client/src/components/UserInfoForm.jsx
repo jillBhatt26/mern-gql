@@ -4,14 +4,18 @@ import { useMutation } from '@apollo/client';
 import { UPDATE_USER } from '../services/mutation/User';
 import { FETCH_ACTIVE_USER } from '../services/query/User';
 import useAuthStore from '../stores/auth';
+import UpdateAccountModal from './UpdateAccountModal';
 
 const UserInfoForm = () => {
     // states
     const [inputUsername, setInputUsername] = useState('');
     const [inputEmail, setInputEmail] = useState('');
     const [inputPassword, setInputPassword] = useState('');
+    const [updateUserInputs, setUpdateUserInputs] = useState({});
     const [updateUserError, setUpdateUserError] = useState(null);
     const [disableButton, setDisableButton] = useState(false);
+    const [showUpdateUserConfirmModal, setShowUpdateUserConfirmModal] =
+        useState(false);
 
     // hooks
     const navigate = useNavigate();
@@ -54,37 +58,33 @@ const UserInfoForm = () => {
     const handleUpdateUserSubmit = async e => {
         e.preventDefault();
 
-        const updateUserInputs = {};
+        const updateUserInputsData = {};
 
         if (inputEmail && inputEmail.trim())
-            updateUserInputs.email = inputEmail.trim();
+            updateUserInputsData.email = inputEmail.trim();
 
         if (inputUsername && inputUsername.trim())
-            updateUserInputs.username = inputUsername.trim();
+            updateUserInputsData.username = inputUsername.trim();
 
         if (inputPassword && inputPassword.trim())
-            updateUserInputs.password = inputPassword.trim();
+            updateUserInputsData.password = inputPassword.trim();
 
-        if (!Object.keys(updateUserInputs).length)
+        if (!Object.keys(updateUserInputsData).length)
             return setUpdateUserError('Enter any one value to update user!');
 
-        if (updateUserInputs.email === authUser.email)
+        if (updateUserInputsData.email === authUser.email)
             return setUpdateUserError(
                 'New email should be different than existing one'
             );
 
-        if (updateUserInputs.username === authUser.username)
+        if (updateUserInputsData.username === authUser.username)
             return setUpdateUserError(
                 'New username should be different than existing one'
             );
 
-        updateUser({
-            variables: {
-                updateUserInputs: {
-                    ...updateUserInputs
-                }
-            }
-        });
+        setUpdateUserInputs(updateUserInputsData);
+
+        setShowUpdateUserConfirmModal(true);
     };
 
     return (
@@ -158,7 +158,7 @@ const UserInfoForm = () => {
 
                 <div className="d-grid gap-2 mt-5">
                     <button
-                        className={`btn btn-lg btn-success ${
+                        className={`btn btn-lg btn-outline-warning border-warning ${
                             disableButton ?? 'disabled'
                         }`}
                         type="submit"
@@ -168,6 +168,20 @@ const UserInfoForm = () => {
                     </button>
                 </div>
             </form>
+
+            <UpdateAccountModal
+                showUpdateUserConfirmModal={showUpdateUserConfirmModal}
+                setShowUpdateUserConfirmModal={setShowUpdateUserConfirmModal}
+                handleUpdateUser={() => {
+                    updateUser({
+                        variables: {
+                            updateUserInputs: {
+                                ...updateUserInputs
+                            }
+                        }
+                    });
+                }}
+            />
         </>
     );
 };
