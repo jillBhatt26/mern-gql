@@ -1,13 +1,15 @@
+import { lazy } from 'react';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
-import AboutPage from '../pages/About';
-import ErrorPage from '../pages/Error';
-import FilesPage from '../pages/Files';
-import HomePage from '../pages/Home';
-import LoginPage from '../pages/Login';
-import SettingsPage from '../pages/Settings';
-import SignupPage from '../pages/Signup';
-import PublicRoute from './PublicRoute';
-import PrivateRoute from './PrivateRoute';
+
+const AboutPage = lazy(() => import('../pages/About'));
+const ErrorPage = lazy(() => import('../pages/Error'));
+const FilesPage = lazy(() => import('../pages/Files'));
+const HomePage = lazy(() => import('../pages/Home'));
+const LoginPage = lazy(() => import('../pages/Login'));
+const SettingsPage = lazy(() => import('../pages/Settings'));
+const SignupPage = lazy(() => import('../pages/Signup'));
+const PrivateRoute = lazy(() => import('./PrivateRoute'));
+const PublicRoute = lazy(() => import('./PublicRoute'));
 
 const AppRoutes = () => {
     return (

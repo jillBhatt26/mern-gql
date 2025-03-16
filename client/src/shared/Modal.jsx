@@ -6,6 +6,7 @@ import {
     useRef
 } from 'react';
 import { createPortal } from 'react-dom';
+import useOutClickNotifier from '../hooks/useOutClickNotifier';
 
 const ModalContext = createContext();
 
@@ -13,14 +14,42 @@ const Modal = ({ isOpen, onClose, onConfirm, children, ...props }) => {
     // refs
     const modalRef = useRef();
 
+    // hooks
+    const hasClickedOutside = useOutClickNotifier(modalRef);
+
     // callbacks
     const keyDownHandlerCB = useCallback(
         e => {
-            if (e.keyCode !== 27) return;
+            if (e.keyCode === 27) {
+                e.preventDefault();
 
-            e.preventDefault();
+                onClose();
+            }
 
-            onClose();
+            if (e.keyCode === 9) {
+                if (!modalRef || !modalRef.current) return;
+
+                e.preventDefault();
+
+                const focusableElementsOfModal = Array.from(
+                    modalRef.current.querySelectorAll('button[type="button"]')
+                );
+
+                if (!focusableElementsOfModal.length) return;
+
+                const focussedElementIdx = focusableElementsOfModal.findIndex(
+                    element => element === document.activeElement
+                );
+
+                let newFocusIndex = focussedElementIdx + 1;
+
+                if (newFocusIndex > focusableElementsOfModal.length - 1)
+                    newFocusIndex = 0;
+
+                focusableElementsOfModal[newFocusIndex].focus({
+                    focusVisible: true
+                });
+            }
         },
         [onClose]
     );
@@ -35,6 +64,10 @@ const Modal = ({ isOpen, onClose, onConfirm, children, ...props }) => {
     useEffect(() => {
         handleKeyDownCB();
     }, [handleKeyDownCB]);
+
+    useEffect(() => {
+        if (hasClickedOutside) onClose();
+    }, [hasClickedOutside, onClose]);
 
     return createPortal(
         <>
@@ -119,13 +152,14 @@ Modal.Footer.ConfirmButton = function ModalFooterConfirmButton({
     const { onConfirm } = useContext(ModalContext);
 
     return (
-        <div
+        <button
             className={`btn btn-primary ${className}`}
             onClick={onConfirm}
+            type="button"
             {...props}
         >
             {children}
-        </div>
+        </button>
     );
 };
 
@@ -137,13 +171,14 @@ Modal.Footer.CancelButton = function ModalFooterCancelButton({
     const { onClose } = useContext(ModalContext);
 
     return (
-        <div
+        <button
             className={`btn btn-secondary ${className}`}
+            type="button"
             onClick={onClose}
             {...props}
         >
             {children}
-        </div>
+        </button>
     );
 };
 

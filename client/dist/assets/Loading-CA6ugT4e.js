@@ -1,0 +1,1 @@
+import{j as e}from"./index-BwmDE6J8.js";import{N as s,F as t}from"./Footer-Dm3DVUD_.js";const n=()=>e.jsxs("div",{className:"overflow-hidden",children:[e.jsx(s,{}),e.jsx("div",{style:{display:"flex",justifyContent:"center",alignItems:"center",height:"80vh"},children:e.jsx("h1",{className:"text-center",children:"Loading..."})}),e.jsx(t,{})]});export{n as L};

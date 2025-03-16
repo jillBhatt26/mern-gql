@@ -1,10 +1,15 @@
-import Nav from '../shared/Nav';
-import Footer from '../shared/Footer';
+import { lazy, Suspense } from 'react';
+import LoadingPage from './Loading';
+
+const Nav = lazy(() => import('../shared/Nav'));
+const Footer = lazy(() => import('../shared/Footer'));
 
 const AboutPage = () => {
     return (
         <>
-            <Nav />
+            <Suspense fallback={<LoadingPage />}>
+                <Nav />
+            </Suspense>
 
             <div className="container">
                 <div
@@ -20,7 +25,9 @@ const AboutPage = () => {
                 </div>
             </div>
 
-            <Footer />
+            <Suspense fallback={<LoadingPage />}>
+                <Footer />
+            </Suspense>
         </>
     );
 };
