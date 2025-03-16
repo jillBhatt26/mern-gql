@@ -1,36 +1,117 @@
+import { createContext, useContext } from 'react';
 import { createPortal } from 'react-dom';
 
-const Modal = ({ isOpen, onClose }) => {
+const ModalContext = createContext();
+
+const Modal = ({ isOpen, onClose, onConfirm, children, ...props }) => {
     return createPortal(
         <>
             {isOpen && (
-                <div className="dialog-overlay">
-                    <div className="dialog-container">
-                        <div className="modal-header d-flex justify-content-between">
-                            <h3 className="modal-title">Dialog Title</h3>
-                            <button
-                                type="button"
-                                className="btn-close"
-                                onClick={onClose}
-                            >
-                                <span aria-hidden="true"></span>
-                            </button>
-                        </div>
-                        <div className="modal-body py-1">Modal body</div>
-                        <div className="modal-footer gap-3">
-                            <button className="btn btn-primary">Confirm</button>
-                            <button
-                                className="btn btn-secondary"
-                                onClick={onClose}
-                            >
-                                Cancel
-                            </button>
-                        </div>
+                <div className="dialog-overlay" {...props}>
+                    <div className="dialog-container bg-primary">
+                        <ModalContext.Provider value={{ onClose, onConfirm }}>
+                            {children}
+                        </ModalContext.Provider>
                     </div>
                 </div>
             )}
         </>,
         document.body
+    );
+};
+
+Modal.Header = function ModalHeader({ children, className, ...props }) {
+    return (
+        <div
+            className={`modal-header d-flex justify-content-between align-middle ${className}`}
+            {...props}
+        >
+            {children}
+        </div>
+    );
+};
+
+Modal.Header.Title = function ModalHeaderTitle({
+    children,
+    className,
+    ...props
+}) {
+    return (
+        <h3 className={`modal-title ${className}`} {...props}>
+            {children}
+        </h3>
+    );
+};
+
+Modal.Header.CloseButton = function ModalHeaderCloseButton({
+    children,
+    className,
+    ...props
+}) {
+    const { onClose } = useContext(ModalContext);
+
+    return (
+        <button
+            type="button"
+            className={`btn-close ${className}`}
+            style={{ marginTop: `-1.5rem` }}
+            onClick={onClose}
+            {...props}
+        >
+            <span aria-hidden="true">{children}</span>
+        </button>
+    );
+};
+
+Modal.Body = function ModalBody({ children, className, ...props }) {
+    return (
+        <div className={`modal-body ${className}`} {...props}>
+            {children}
+        </div>
+    );
+};
+
+Modal.Footer = function ModalFooter({ children, className, ...props }) {
+    return (
+        <div className={`modal-footer gap-3 ${className}`} {...props}>
+            {children}
+        </div>
+    );
+};
+
+Modal.Footer.ConfirmButton = function ModalFooterConfirmButton({
+    children,
+    className,
+    ...props
+}) {
+    const { onConfirm } = useContext(ModalContext);
+
+    return (
+        <div
+            className={`btn btn-primary ${className}`}
+            onClick={onConfirm}
+            {...props}
+        >
+            {children}
+        </div>
+    );
+};
+
+Modal.Footer.CancelButton = function ModalFooterCancelButton({
+    children,
+    className,
+    ...props
+}) {
+    const { onClose } = useContext(ModalContext);
+
+    return (
+        <div
+            className={`btn btn-secondary ${className}`}
+            onClick={onClose}
+            {...props}
+        >
+            {children}
+        </div>
     );
 };
 

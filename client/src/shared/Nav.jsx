@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import Logo from '../assets/gql-logo.png';
 import { LOGOUT_USER } from '../services/mutation/User';
 import { FETCH_ACTIVE_USER } from '../services/query/User';
 import useAuthStore from '../stores/auth';
@@ -127,9 +128,18 @@ const Nav = () => {
             <div className="container py-1 px-2  px-md-0">
                 <Link
                     to="/"
-                    className="navbar-brand fs-4"
+                    className="navbar-brand fs-4 gap-3"
                     style={{ border: 'none' }}
                 >
+                    <img
+                        src={Logo}
+                        alt="logo"
+                        style={{
+                            height: '2rem',
+                            marginTop: '-6px',
+                            marginRight: '0.6rem'
+                        }}
+                    />
                     GQL TM
                 </Link>
                 <button
