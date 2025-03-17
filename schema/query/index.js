@@ -2,6 +2,7 @@ const { GraphQLObjectType } = require('graphql');
 const hello = require('./hello');
 const { todosQuery, todoQuery } = require('./todos');
 const { FetchActiveUser } = require('./users');
+const { FetchUserImagesQuery } = require('./images');
 
 const query = new GraphQLObjectType({
     name: 'Query',
@@ -9,7 +10,8 @@ const query = new GraphQLObjectType({
         hello,
         todos: todosQuery,
         todo: todoQuery,
-        FetchActiveUser
+        FetchActiveUser,
+        FetchUserImagesQuery
     }
 });
 

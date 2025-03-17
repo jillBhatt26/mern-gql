@@ -73,13 +73,22 @@ type Query {
   todos: [Todo]!
   todo(id: ID!): Todo
   FetchActiveUser: UserInfoType
+  FetchUserImagesQuery: [ImagesURLInfo]!
+}
+
+type ImagesURLInfo {
+  _id: ID!
+  filename: String!
+  cloudImageID: ID!
+  url: String!
 }
 
 type Mutation {
   CreateTodo(createTodoInput: CreateTodoInput!): Todo!
   UpdateTodo(updateTodoInput: UpdateTodoInput!): Todo
   DeleteTodo(id: ID!): Boolean!
-  UploadFile(file: Upload): FileType
+  UploadImage(file: Upload): FileType
+  DeleteImage(deleteImageInput: DeleteImageInput!): Boolean!
   LoginUser(loginUserInput: LoginUserInputType!): UserInfoType
   LogoutUser: Boolean
   SignupUser(signupUserInput: SignupUserInputType!): UserInfoType
@@ -89,3 +98,8 @@ type Mutation {
 
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
+
+input DeleteImageInput {
+  cloudImageID: ID!
+  cloudImageName: String!
+}

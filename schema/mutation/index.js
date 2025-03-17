@@ -1,6 +1,6 @@
 const { GraphQLObjectType } = require('graphql');
 const { CreateTodo, UpdateTodo, DeleteTodo } = require('./todos');
-const { UploadFile } = require('./files');
+const { UploadImage, DeleteImage } = require('./files');
 const {
     LoginUser,
     LogoutUser,
@@ -15,7 +15,8 @@ const mutation = new GraphQLObjectType({
         CreateTodo,
         UpdateTodo,
         DeleteTodo,
-        UploadFile,
+        UploadImage,
+        DeleteImage,
         LoginUser,
         LogoutUser,
         SignupUser,

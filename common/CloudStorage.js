@@ -85,12 +85,12 @@ class CloudStorage {
             }
         });
 
-    delete = filename =>
+    delete = (userID, filename) =>
         new Promise(async (resolve, reject) => {
             try {
                 const { data, error } = await supabase.storage
                     .from(imageBucket)
-                    .remove([filename]);
+                    .remove([`${userID}/${filename}`]);
 
                 if (error)
                     throw new CustomError(
