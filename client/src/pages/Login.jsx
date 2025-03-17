@@ -125,7 +125,20 @@ const LoginPage = () => {
                             type="submit"
                             disabled={disableButton}
                         >
-                            Login
+                            {loading ? (
+                                <div className="progress">
+                                    <div
+                                        className="progress-bar progress-bar-striped bg-info"
+                                        role="progressbar"
+                                        style={{ width: '100%' }}
+                                        aria-valuenow={100}
+                                        aria-valuemin={0}
+                                        aria-valuemax={100}
+                                    />
+                                </div>
+                            ) : (
+                                <span>Login</span>
+                            )}
                         </button>
                     </div>
                 </form>

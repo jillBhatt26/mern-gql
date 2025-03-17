@@ -135,7 +135,20 @@ const SignupPage = () => {
                             type="submit"
                             disabled={disableButton}
                         >
-                            Signup
+                            {loading ? (
+                                <div className="progress">
+                                    <div
+                                        className="progress-bar progress-bar-striped bg-info"
+                                        role="progressbar"
+                                        style={{ width: '100%' }}
+                                        aria-valuenow={100}
+                                        aria-valuemin={0}
+                                        aria-valuemax={100}
+                                    />
+                                </div>
+                            ) : (
+                                <span>Signup</span>
+                            )}
                         </button>
                     </div>
                 </form>
