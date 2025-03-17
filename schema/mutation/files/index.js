@@ -20,8 +20,17 @@ const UploadFile = {
     args: {
         file: { type: GraphQLUpload }
     },
-    resolve: async (parent, { file }) => {
+    resolve: async (parent, { file }, context) => {
         try {
+            const {
+                req: { session }
+            } = context;
+
+            const { userID, username } = session;
+
+            if (!userID || !username)
+                throw new CustomError('You need to login first!', 401);
+
             const { createReadStream, filename, mimetype, encoding } =
                 await file;
 
@@ -42,11 +51,10 @@ const UploadFile = {
             createReadStream().pipe(out);
             await finished(out);
 
-            const cloudStorage = new CloudStorage();
+            // NOTE: This will create a new folder if not exists named <userID>
+            await new CloudStorage().upload(userID, newFileName);
 
-            const data = await cloudStorage.upload(newFileName);
-
-            console.log('file upload data: ', data);
+            fs.unlinkSync(uploadFileDest);
 
             return { filename, mimetype, encoding, newFileName };
         } catch (error) {
