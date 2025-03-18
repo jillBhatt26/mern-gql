@@ -10,15 +10,19 @@ const Gallery = () => {
 
     return (
         <div className="container">
-            {images.length > 0 &&
-                images.map((img, idx) => (
-                    <div
-                        key={idx}
-                        className="d-inline-block col-sm-12 col-md-6 col-lg-4 overflow-hidden image-container"
-                    >
-                        <Image key={idx} src={img} alt={img} />
-                    </div>
-                ))}
+            <div className="d-grid">
+                <div className="row g-3">
+                    {images.length > 0 &&
+                        images.map((img, idx) => (
+                            <div
+                                key={idx}
+                                className="col-sm-12 col-md-6 col-lg-4 mw-100"
+                            >
+                                <Image src={img} alt={img} />
+                            </div>
+                        ))}
+                </div>
+            </div>
         </div>
     );
 };
