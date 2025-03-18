@@ -74,7 +74,7 @@ const Nav = () => {
 
             case '/':
             case '/settings':
-            case '/files':
+            case '/gallery':
                 setNavButtonLabel('Logout');
                 break;
         }
@@ -114,7 +114,7 @@ const Nav = () => {
 
             case '/':
             case '/settings':
-            case '/files':
+            case '/gallery':
                 logoutUser();
                 break;
         }
@@ -182,11 +182,11 @@ const Nav = () => {
                                 </li>
                                 <li className="nav-item">
                                     <Link
-                                        to="/files"
+                                        to="/gallery"
                                         className="nav-link"
                                         style={{ border: 'none' }}
                                     >
-                                        Files
+                                        Gallery
                                     </Link>
                                 </li>
                             </>

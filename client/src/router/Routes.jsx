@@ -4,7 +4,7 @@ import LoadingPage from '../pages/Loading';
 
 const AboutPage = lazy(() => import('../pages/About'));
 const ErrorPage = lazy(() => import('../pages/Error'));
-const FilesPage = lazy(() => import('../pages/Files'));
+const GalleryPage = lazy(() => import('../pages/Gallery'));
 const HomePage = lazy(() => import('../pages/Home'));
 const LoginPage = lazy(() => import('../pages/Login'));
 const SettingsPage = lazy(() => import('../pages/Settings'));
@@ -75,10 +75,10 @@ const AppRoutes = () => {
                         }
                     />
                     <Route
-                        path="/files"
+                        path="/gallery"
                         element={
                             <Suspense fallback={<LoadingPage />}>
-                                <FilesPage />
+                                <GalleryPage />
                             </Suspense>
                         }
                     />
