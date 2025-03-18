@@ -1,4 +1,4 @@
-const fs = require('fs');
+// const fs = require('fs');
 const path = require('path');
 const { GraphQLNonNull, GraphQLBoolean } = require('graphql');
 const { GraphQLUpload } = require('graphql-upload');
@@ -10,13 +10,13 @@ const { TOTAL_DOC_LIMIT } = require('../../../config/constants');
 const ImagesModel = require('../../../models/Image');
 const { FileType, DeleteImageInput } = require('../../types/files');
 
-const pathToUploadsDir = path.resolve(
-    __dirname,
-    '../',
-    '../',
-    '../',
-    'uploads'
-);
+// const pathToUploadsDir = path.resolve(
+//     __dirname,
+//     '../',
+//     '../',
+//     '../',
+//     'uploads'
+// );
 
 const UploadImage = {
     type: FileType,
@@ -57,20 +57,35 @@ const UploadImage = {
 
             const newFileName = `${uuidV4()}${ext}`;
 
-            const uploadFileDest = path.resolve(pathToUploadsDir, newFileName);
+            // const uploadFileDest = path.resolve(pathToUploadsDir, newFileName);
 
-            const out = fs.createWriteStream(uploadFileDest);
+            // const out = fs.createWriteStream(uploadFileDest);
 
-            createReadStream().pipe(out);
-            await finished(out);
+            // createReadStream().pipe(out);
+            // await finished(out);
+
+            const chunks = [];
+
+            const stream = createReadStream();
+
+            for await (const chunk of stream) {
+                chunks.push(chunk);
+            }
+
+            await finished(stream);
+
+            const fileToUpload = new File(chunks, newFileName, {
+                type: `image/${ext}`
+            });
 
             // NOTE: This will create a new folder if not exists named <userID>
-            const { id: cloudImageID } = await new CloudStorage().upload(
+            const { id: cloudImageID } = await new CloudStorage().uploadFile(
                 userID,
+                fileToUpload,
                 newFileName
             );
 
-            fs.unlinkSync(uploadFileDest);
+            // fs.unlinkSync(uploadFileDest);
 
             await ImagesModel.create({
                 cloudImageName: newFileName,

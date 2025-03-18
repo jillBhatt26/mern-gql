@@ -38,6 +38,28 @@ class CloudStorage {
             }
         });
 
+    uploadFile = (userID, file, localFilename) =>
+        new Promise(async (resolve, reject) => {
+            try {
+                const { data, error } = await supabase.storage
+                    .from(imageBucket)
+                    .upload(`${userID}/${localFilename}`, file);
+
+                if (error) {
+                    throw new CustomError(
+                        error.message ?? 'File upload failed!',
+                        error.code ?? 500
+                    );
+                }
+
+                resolve(data);
+            } catch (error) {
+                if (error instanceof CustomError) return reject(error);
+
+                return reject(new CustomError('File upload failed!', 500));
+            }
+        });
+
     upload = (userID, localFilename) =>
         new Promise(async (resolve, reject) => {
             {
