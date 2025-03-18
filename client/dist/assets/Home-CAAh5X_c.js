@@ -1,1 +1,0 @@
-import{j as e,N as s,F as a}from"./index-CI1S_wXF.js";const t=()=>e.jsxs(e.Fragment,{children:[e.jsx(s,{}),e.jsx("div",{className:"container",children:e.jsx("h1",{className:"text-center",children:"Home Page"})}),e.jsx(a,{})]});export{t as default};
