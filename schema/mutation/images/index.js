@@ -21,9 +21,9 @@ const { ImageType, DeleteImageInput } = require('../../types/images');
 const UploadImage = {
     type: ImageType,
     args: {
-        file: { type: GraphQLUpload }
+        image: { type: GraphQLUpload }
     },
-    resolve: async (parent, { file }, context) => {
+    resolve: async (parent, { image }, context) => {
         try {
             const {
                 req: { session }
@@ -45,7 +45,7 @@ const UploadImage = {
                 );
 
             const { createReadStream, filename, mimetype, encoding } =
-                await file;
+                await image;
 
             const ext = path.extname(filename);
 
@@ -87,13 +87,15 @@ const UploadImage = {
 
             // fs.unlinkSync(uploadFileDest);
 
-            await ImagesModel.create({
+            const newImage = await ImagesModel.create({
                 cloudImageName,
                 cloudImageID,
                 userID
             });
 
             return {
+                _id: newImage._id,
+                cloudImageID,
                 filename,
                 mimetype,
                 encoding,

@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client';
+import '../types';
 
 const FETCH_ACTIVE_USER = gql`
     query FetchActiveUser {

@@ -1,4 +1,6 @@
 type ImageType {
+  _id: ID!
+  cloudImageID: ID!
   filename: String!
   mimetype: String!
   encoding: String!
@@ -74,6 +76,7 @@ type Query {
   todo(id: ID!): Todo
   FetchActiveUser: UserInfoType
   FetchUserImagesQuery: [ImagesURLInfo]!
+  FetchUserImage(fetchImageInput: FetchImageInput!): ImagesURLInfo
 }
 
 type ImagesURLInfo {
@@ -83,11 +86,16 @@ type ImagesURLInfo {
   url: String!
 }
 
+input FetchImageInput {
+  cloudImageID: ID!
+  cloudImageName: String!
+}
+
 type Mutation {
   CreateTodo(createTodoInput: CreateTodoInput!): Todo!
   UpdateTodo(updateTodoInput: UpdateTodoInput!): Todo
   DeleteTodo(id: ID!): Boolean!
-  UploadImage(file: Upload): ImageType
+  UploadImage(image: Upload): ImageType
   DeleteImage(deleteImageInput: DeleteImageInput!): Boolean!
   LoginUser(loginUserInput: LoginUserInputType!): UserInfoType
   LogoutUser: Boolean

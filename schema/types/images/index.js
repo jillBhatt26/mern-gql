@@ -15,6 +15,12 @@ const UploadImageType = new GraphQLNonNull(
 const ImageType = new GraphQLObjectType({
     name: 'ImageType',
     fields: {
+        _id: {
+            type: new GraphQLNonNull(GraphQLID)
+        },
+        cloudImageID: {
+            type: new GraphQLNonNull(GraphQLID)
+        },
         filename: {
             type: new GraphQLNonNull(GraphQLString)
         },
@@ -60,9 +66,22 @@ const DeleteImageInput = new GraphQLInputObjectType({
     }
 });
 
+const FetchImageInput = new GraphQLInputObjectType({
+    name: 'FetchImageInput',
+    fields: {
+        cloudImageID: {
+            type: new GraphQLNonNull(GraphQLID)
+        },
+        cloudImageName: {
+            type: new GraphQLNonNull(GraphQLString)
+        }
+    }
+});
+
 module.exports = {
     ImageType,
     UploadImageType,
     ImagesURLInfo,
-    DeleteImageInput
+    DeleteImageInput,
+    FetchImageInput
 };

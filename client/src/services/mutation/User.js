@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import '../types/User';
+import '../types';
 
 const LOGIN_USER = gql`
     mutation LoginUser($loginUserInput: LoginUserInputType!) {
