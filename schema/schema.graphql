@@ -1,8 +1,8 @@
-type FileType {
+type ImageType {
   filename: String!
   mimetype: String!
   encoding: String!
-  newFileName: String!
+  cloudImageName: String!
 }
 
 input CreateTodoInput {
@@ -78,7 +78,7 @@ type Query {
 
 type ImagesURLInfo {
   _id: ID!
-  filename: String!
+  cloudImageName: String!
   cloudImageID: ID!
   url: String!
 }
@@ -87,7 +87,7 @@ type Mutation {
   CreateTodo(createTodoInput: CreateTodoInput!): Todo!
   UpdateTodo(updateTodoInput: UpdateTodoInput!): Todo
   DeleteTodo(id: ID!): Boolean!
-  UploadImage(file: Upload): FileType
+  UploadImage(file: Upload): ImageType
   DeleteImage(deleteImageInput: DeleteImageInput!): Boolean!
   LoginUser(loginUserInput: LoginUserInputType!): UserInfoType
   LogoutUser: Boolean

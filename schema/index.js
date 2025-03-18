@@ -6,7 +6,7 @@ const { GraphQLUpload } = require('graphql-upload');
 const mutation = require('./mutation');
 const query = require('./query');
 const rules = require('./rules');
-const { FileType } = require('./types/files');
+const { ImageType } = require('./types/images');
 const {
     CreateTodoInput,
     EnumTodoStatus,
@@ -28,8 +28,8 @@ const schema = new GraphQLSchema({
     query,
     mutation,
     types: [
-        // files
-        FileType,
+        // images
+        ImageType,
 
         // todos
         CreateTodoInput,

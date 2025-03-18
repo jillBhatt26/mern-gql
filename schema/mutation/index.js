@@ -1,6 +1,6 @@
 const { GraphQLObjectType } = require('graphql');
 const { CreateTodo, UpdateTodo, DeleteTodo } = require('./todos');
-const { UploadImage, DeleteImage } = require('./files');
+const { UploadImage, DeleteImage } = require('./images');
 const {
     LoginUser,
     LogoutUser,

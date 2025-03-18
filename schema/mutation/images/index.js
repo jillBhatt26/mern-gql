@@ -8,7 +8,7 @@ const CloudStorage = require('../../../common/CloudStorage');
 const CustomError = require('../../../common/CustomError');
 const { TOTAL_DOC_LIMIT } = require('../../../config/constants');
 const ImagesModel = require('../../../models/Image');
-const { FileType, DeleteImageInput } = require('../../types/files');
+const { ImageType, DeleteImageInput } = require('../../types/images');
 
 // const pathToUploadsDir = path.resolve(
 //     __dirname,
@@ -19,7 +19,7 @@ const { FileType, DeleteImageInput } = require('../../types/files');
 // );
 
 const UploadImage = {
-    type: FileType,
+    type: ImageType,
     args: {
         file: { type: GraphQLUpload }
     },
@@ -55,7 +55,7 @@ const UploadImage = {
                 throw new CustomError('Unsupported file type provided', 400);
             }
 
-            const newFileName = `${uuidV4()}${ext}`;
+            const cloudImageName = `${uuidV4()}${ext}`;
 
             // const uploadFileDest = path.resolve(pathToUploadsDir, newFileName);
 
@@ -74,26 +74,31 @@ const UploadImage = {
 
             await finished(stream);
 
-            const fileToUpload = new File(chunks, newFileName, {
+            const imageToUpload = new File(chunks, cloudImageName, {
                 type: `image/${ext}`
             });
 
             // NOTE: This will create a new folder if not exists named <userID>
             const { id: cloudImageID } = await new CloudStorage().uploadFile(
                 userID,
-                fileToUpload,
-                newFileName
+                imageToUpload,
+                cloudImageName
             );
 
             // fs.unlinkSync(uploadFileDest);
 
             await ImagesModel.create({
-                cloudImageName: newFileName,
+                cloudImageName,
                 cloudImageID,
                 userID
             });
 
-            return { filename, mimetype, encoding, newFileName };
+            return {
+                filename,
+                mimetype,
+                encoding,
+                cloudImageName
+            };
         } catch (error) {
             if (error instanceof CustomError) return error;
 

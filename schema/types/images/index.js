@@ -8,10 +8,12 @@ const {
 } = require('graphql');
 const { GraphQLUpload } = require('graphql-upload');
 
-const UploadFileType = new GraphQLNonNull(new GraphQLScalarType(GraphQLUpload));
+const UploadImageType = new GraphQLNonNull(
+    new GraphQLScalarType(GraphQLUpload)
+);
 
-const FileType = new GraphQLObjectType({
-    name: 'FileType',
+const ImageType = new GraphQLObjectType({
+    name: 'ImageType',
     fields: {
         filename: {
             type: new GraphQLNonNull(GraphQLString)
@@ -22,7 +24,7 @@ const FileType = new GraphQLObjectType({
         encoding: {
             type: new GraphQLNonNull(GraphQLString)
         },
-        newFileName: {
+        cloudImageName: {
             type: new GraphQLNonNull(GraphQLString)
         }
     }
@@ -34,7 +36,7 @@ const ImagesURLInfo = new GraphQLObjectType({
         _id: {
             type: new GraphQLNonNull(GraphQLID)
         },
-        filename: {
+        cloudImageName: {
             type: new GraphQLNonNull(GraphQLString)
         },
         cloudImageID: {
@@ -59,8 +61,8 @@ const DeleteImageInput = new GraphQLInputObjectType({
 });
 
 module.exports = {
-    FileType,
-    UploadFileType,
+    ImageType,
+    UploadImageType,
     ImagesURLInfo,
     DeleteImageInput
 };
