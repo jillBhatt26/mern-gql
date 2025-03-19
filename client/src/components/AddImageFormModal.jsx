@@ -22,7 +22,7 @@ const AddImageFormModal = ({
     const [uploadImage, { loading }] = useMutation(UPLOAD_IMAGE, {
         onCompleted: data => {
             if (data.UploadImage) {
-                pushNewImage(data.UploadImage);
+                pushNewImage({ ...data.UploadImage, url: renderImageURL });
                 handleAddImageModalClose();
             }
         },

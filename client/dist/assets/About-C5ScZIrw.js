@@ -1,1 +1,0 @@
-import{j as e,N as t,F as s}from"./index-Bmc6KnAu.js";const r=()=>e.jsxs(e.Fragment,{children:[e.jsx(t,{}),e.jsx("div",{className:"container",children:e.jsx("div",{style:{display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",height:"80vh"},children:e.jsx("h1",{className:"text-center",children:"About Page"})})}),e.jsx(s,{})]});export{r as default};
