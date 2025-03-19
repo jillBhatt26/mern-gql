@@ -73,7 +73,11 @@ const Modal = ({ isOpen, onClose, onConfirm, children, ...props }) => {
         <>
             {isOpen && (
                 <div className="dialog-overlay" {...props}>
-                    <div className="dialog-container bg-primary" ref={modalRef}>
+                    <div
+                        className="dialog-container bg-primary my-auto"
+                        ref={modalRef}
+                        style={{ maxHeight: '90vh', overflow: 'auto' }}
+                    >
                         <ModalContext.Provider value={{ onClose, onConfirm }}>
                             {children}
                         </ModalContext.Provider>

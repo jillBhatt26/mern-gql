@@ -38,9 +38,9 @@ const GalleryPage = () => {
     }, [error]);
 
     // event handlers
-    const handleUploadImage = async e => {
-        e.preventDefault();
-    };
+    // const handleUploadImage = async e => {
+    //     e.preventDefault();
+    // };
 
     if (isFetchingUserImages) return <LoadingPage />;
 
@@ -64,7 +64,7 @@ const GalleryPage = () => {
                         </div>
                     )}
 
-                    <form
+                    {/* <form
                         noValidate
                         autoComplete="off"
                         onSubmit={handleUploadImage}
@@ -82,7 +82,7 @@ const GalleryPage = () => {
                                 id="formFile"
                             />
                         </div>
-                    </form>
+                    </form> */}
                 </div>
 
                 <Gallery userImages={userImages} />

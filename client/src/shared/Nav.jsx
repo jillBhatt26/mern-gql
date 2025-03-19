@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Logo from '../assets/gql-logo.png';
+import AddImageFormModal from '../components/AddImageFormModal';
 import { LOGOUT_USER } from '../services/mutation/User';
 import { FETCH_ACTIVE_USER } from '../services/query/User';
 import useAuthStore from '../stores/auth';
@@ -10,6 +11,7 @@ const Nav = () => {
     // states
     const [navButtonLabel, setNavButtonLabel] = useState('Signup');
     const [disableNavButton, setDisableNavButton] = useState(false);
+    const [showAddImageFormModal, setShowAddImageFormModal] = useState(false);
 
     // hooks
     const navigate = useNavigate();
@@ -199,8 +201,9 @@ const Nav = () => {
                                 <button
                                     type="button"
                                     className="btn btn-success fw-bold mt-1 mb-3 mx-3 m-md-0"
-                                    onClick={() => console.log('add')}
-                                    disabled={disableNavButton}
+                                    onClick={() =>
+                                        setShowAddImageFormModal(true)
+                                    }
                                 >
                                     New Image
                                 </button>
@@ -220,6 +223,11 @@ const Nav = () => {
                     </div>
                 </div>
             </div>
+
+            <AddImageFormModal
+                showAddImageFormModal={showAddImageFormModal}
+                setShowAddImageFormModal={setShowAddImageFormModal}
+            />
         </nav>
     );
 };
