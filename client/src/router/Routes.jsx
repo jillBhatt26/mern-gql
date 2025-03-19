@@ -9,6 +9,7 @@ const HomePage = lazy(() => import('../pages/Home'));
 const LoginPage = lazy(() => import('../pages/Login'));
 const SettingsPage = lazy(() => import('../pages/Settings'));
 const SignupPage = lazy(() => import('../pages/Signup'));
+const ViewPage = lazy(() => import('../pages/View'));
 const PrivateRoute = lazy(() => import('./PrivateRoute'));
 const PublicRoute = lazy(() => import('./PublicRoute'));
 
@@ -79,6 +80,15 @@ const AppRoutes = () => {
                         element={
                             <Suspense fallback={<LoadingPage />}>
                                 <GalleryPage />
+                            </Suspense>
+                        }
+                    />
+
+                    <Route
+                        path="/view/:id"
+                        element={
+                            <Suspense fallback={<LoadingPage />}>
+                                <ViewPage />
                             </Suspense>
                         }
                     />

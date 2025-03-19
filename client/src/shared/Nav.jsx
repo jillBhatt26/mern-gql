@@ -47,6 +47,9 @@ const Nav = () => {
     }, [loading]);
 
     useEffect(() => {
+        if (location.pathname.includes('view'))
+            return setNavButtonLabel('Logout');
+
         switch (location.pathname) {
             default:
                 setNavButtonLabel('Signup');
@@ -87,6 +90,8 @@ const Nav = () => {
     // event handlers
     const handleNavButtonClick = e => {
         e.preventDefault();
+
+        if (location.pathname.includes('view')) return logoutUser();
 
         switch (location.pathname) {
             default:

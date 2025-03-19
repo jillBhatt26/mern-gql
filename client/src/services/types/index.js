@@ -79,7 +79,7 @@ gql`
         todo(id: ID!): Todo
         FetchActiveUser: UserInfoType
         FetchUserImagesQuery: [ImagesURLInfo]!
-        FetchUserImage(fetchImageInput: FetchImageInput!): ImagesURLInfo
+        FetchUserImage(id: ID!): ImagesURLInfo
     }
 
     type ImagesURLInfo {
@@ -89,17 +89,12 @@ gql`
         url: String!
     }
 
-    input FetchImageInput {
-        cloudImageID: ID!
-        cloudImageName: String!
-    }
-
     type Mutation {
         CreateTodo(createTodoInput: CreateTodoInput!): Todo!
         UpdateTodo(updateTodoInput: UpdateTodoInput!): Todo
         DeleteTodo(id: ID!): Boolean!
         UploadImage(image: Upload): ImageType
-        DeleteImage(deleteImageInput: DeleteImageInput!): Boolean!
+        DeleteImage(id: ID!): Boolean!
         LoginUser(loginUserInput: LoginUserInputType!): UserInfoType
         LogoutUser: Boolean
         SignupUser(signupUserInput: SignupUserInputType!): UserInfoType
@@ -108,9 +103,4 @@ gql`
     }
 
     scalar Upload
-
-    input DeleteImageInput {
-        cloudImageID: ID!
-        cloudImageName: String!
-    }
 `;

@@ -14,8 +14,8 @@ const UPLOAD_IMAGE = gql`
 `;
 
 const DELETE_IMAGE = gql`
-    mutation DeleteUserImage($deleteImageInput: DeleteImageInput!) {
-        DeleteImage(deleteImageInput: $deleteImageInput)
+    mutation DeleteImage($id: ID!) {
+        DeleteImage(id: $id)
     }
 `;
 

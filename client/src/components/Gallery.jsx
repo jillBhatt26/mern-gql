@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Image from '../shared/Image';
 import AddImageModal from './AddImageFormModal';
 import useImagesStore from '../stores/images';
@@ -26,7 +27,12 @@ const Gallery = () => {
                                 key={idx}
                                 className="col-sm-12 col-md-6 col-lg-4 mw-100"
                             >
-                                <Image src={img.url} alt={img.cloudImageName} />
+                                <Link to={`/view/${img._id}`}>
+                                    <Image
+                                        src={img.url}
+                                        alt={img.cloudImageName}
+                                    />
+                                </Link>
                             </div>
                         ))}
                 </div>

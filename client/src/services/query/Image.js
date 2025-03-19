@@ -13,12 +13,12 @@ const FETCH_USER_IMAGES = gql`
 `;
 
 const FETCH_USER_IMAGE = gql`
-    query FetchUserImage($fetchImageInput: FetchImageInput!) {
-        FetchUserImage(fetchImageInput: $fetchImageInput) {
-            url
+    query FetchUserImage($id: ID!) {
+        FetchUserImage(id: $id) {
             _id
             cloudImageID
             cloudImageName
+            url
         }
     }
 `;
