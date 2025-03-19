@@ -1,5 +1,5 @@
 import { ApolloProvider } from '@apollo/client';
-import apolloClient from './config/apollo';
+import { apolloClient } from './config/apollo';
 import AppRoutes from './router/Routes';
 
 const App = () => {

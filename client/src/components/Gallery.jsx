@@ -1,11 +1,20 @@
+import { useState } from 'react';
 import Image from '../shared/Image';
+import AddImageModal from './AddImageFormModal';
+import useImagesStore from '../stores/images';
 
-const Gallery = ({ userImages }) => {
+const Gallery = () => {
+    // states
+    const [showAddImageFormModal, setShowAddImageFormModal] = useState(false);
+
     // const [images] = useState(
     //     Array(11)
     //         .fill(null)
     //         .map((_, idx) => `https://picsum.photos/1280/720?random=${idx}`)
     // );
+
+    // hooks
+    const userImages = useImagesStore(state => state.userImages);
 
     return userImages.length > 0 ? (
         <div className="container">
@@ -30,13 +39,22 @@ const Gallery = ({ userImages }) => {
                     You haven&apos;t added any images yet.
                     <div className="d-grid mt-5">
                         <div className="col-sm-12 col-md-4 mx-auto">
-                            <button type="button" className="btn btn-success">
+                            <button
+                                type="button"
+                                className="btn btn-success"
+                                onClick={() => setShowAddImageFormModal(true)}
+                            >
                                 Add image now
                             </button>
                         </div>
                     </div>
                 </h3>
             </div>
+
+            <AddImageModal
+                showAddImageFormModal={showAddImageFormModal}
+                setShowAddImageFormModal={setShowAddImageFormModal}
+            />
         </div>
     );
 };

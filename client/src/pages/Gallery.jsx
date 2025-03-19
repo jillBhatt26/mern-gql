@@ -15,7 +15,6 @@ const GalleryPage = () => {
 
     // hooks
     const { data, error, loading } = useQuery(FETCH_USER_IMAGES);
-    const userImages = useImagesStore(state => state.userImages);
     const setUserImages = useImagesStore(state => state.setUserImages);
 
     // effects
@@ -36,11 +35,6 @@ const GalleryPage = () => {
             setFetchImagesError(errorMessage);
         }
     }, [error]);
-
-    // event handlers
-    // const handleUploadImage = async e => {
-    //     e.preventDefault();
-    // };
 
     if (isFetchingUserImages) return <LoadingPage />;
 
@@ -63,29 +57,9 @@ const GalleryPage = () => {
                             {fetchImagesError}
                         </div>
                     )}
-
-                    {/* <form
-                        noValidate
-                        autoComplete="off"
-                        onSubmit={handleUploadImage}
-                    >
-                        <div>
-                            <label
-                                htmlFor="formFile"
-                                className="form-label mt-4"
-                            >
-                                Upload new image
-                            </label>
-                            <input
-                                className="form-control"
-                                type="file"
-                                id="formFile"
-                            />
-                        </div>
-                    </form> */}
                 </div>
 
-                <Gallery userImages={userImages} />
+                <Gallery />
             </div>
 
             <Footer />

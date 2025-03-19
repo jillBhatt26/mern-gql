@@ -15,7 +15,7 @@ const initExpressApolloApp = async (session_DB_URL = DB_URL) => {
         cors({
             origin: FE_URL,
             methods: ['GET', 'POST', 'PUT', 'DELETE'],
-            allowedHeaders: ['Content-Type'],
+            allowedHeaders: ['Content-Type', 'apollo-require-preflight'],
             credentials: true
         })
     );

@@ -6,6 +6,7 @@ import AddImageFormModal from '../components/AddImageFormModal';
 import { LOGOUT_USER } from '../services/mutation/User';
 import { FETCH_ACTIVE_USER } from '../services/query/User';
 import useAuthStore from '../stores/auth';
+import useImagesStore from '../stores/images';
 
 const Nav = () => {
     // states
@@ -17,6 +18,7 @@ const Nav = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const authUser = useAuthStore(state => state.authUser);
+    const userImages = useImagesStore(state => state.userImages);
     const unsetAuthUser = useAuthStore(state => state.unsetAuthUser);
     const [logoutUser, { loading }] = useMutation(LOGOUT_USER, {
         onCompleted: data => {
@@ -196,19 +198,20 @@ const Nav = () => {
                     </ul>
 
                     <div className="d-sm-block d-sm-my-2 d-lg-flex gap-2">
-                        {location.pathname.includes('gallery') && (
-                            <div className="d-grid">
-                                <button
-                                    type="button"
-                                    className="btn btn-success fw-bold mt-1 mb-3 mx-3 m-md-0"
-                                    onClick={() =>
-                                        setShowAddImageFormModal(true)
-                                    }
-                                >
-                                    New Image
-                                </button>
-                            </div>
-                        )}
+                        {location.pathname.includes('gallery') &&
+                            userImages.length > 0 && (
+                                <div className="d-grid">
+                                    <button
+                                        type="button"
+                                        className="btn btn-success fw-bold mt-1 mb-3 mx-3 m-md-0"
+                                        onClick={() =>
+                                            setShowAddImageFormModal(true)
+                                        }
+                                    >
+                                        New Image
+                                    </button>
+                                </div>
+                            )}
 
                         <div className="d-grid">
                             <button
