@@ -4,18 +4,19 @@ import Gallery from '../components/Gallery';
 import Nav from '../shared/Nav';
 import Footer from '../shared/Footer';
 import { FETCH_USER_IMAGES } from '../services/query/Image';
-// import LoadingPage from './Loading';
+import useImagesStore from '../stores/images';
 
 const LoadingPage = lazy(() => import('./Loading'));
 
 const GalleryPage = () => {
     // states
-    const [userImages, setUserImages] = useState([]);
     const [isFetchingUserImages, setIsFetchingUserImages] = useState(true);
     const [fetchImagesError, setFetchImagesError] = useState(null);
 
     // hooks
     const { data, error, loading } = useQuery(FETCH_USER_IMAGES);
+    const userImages = useImagesStore(state => state.userImages);
+    const setUserImages = useImagesStore(state => state.setUserImages);
 
     // effects
     useEffect(() => {
@@ -26,7 +27,7 @@ const GalleryPage = () => {
         if (!data) return;
 
         if (data.FetchUserImagesQuery) setUserImages(data.FetchUserImagesQuery);
-    }, [data]);
+    }, [data, setUserImages]);
 
     useEffect(() => {
         if (error) {
