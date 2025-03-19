@@ -4,6 +4,7 @@ import '../types';
 const UPLOAD_IMAGE = gql`
     mutation UploadImage($image: Upload!) {
         UploadImage(image: $image) {
+            _id
             encoding
             mimetype
             filename

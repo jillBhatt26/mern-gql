@@ -14,10 +14,10 @@ const useImagesStore = create(set => ({
             userImages: [newImage, ...state.userImages]
         }));
     },
-    removeUserImage: image => {
+    removeUserImage: imageID => {
         set(state => ({
             ...state,
-            userImages: state.userImages.filter(img => img._id !== image._id)
+            userImages: state.userImages.filter(img => img._id !== imageID)
         }));
     }
 }));

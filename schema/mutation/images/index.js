@@ -8,7 +8,7 @@ const CloudStorage = require('../../../common/CloudStorage');
 const CustomError = require('../../../common/CustomError');
 const { TOTAL_DOC_LIMIT } = require('../../../config/constants');
 const ImagesModel = require('../../../models/Image');
-const { ImageType, DeleteImageInput } = require('../../types/images');
+const { ImageType, DeleteImageInput, imageID } = require('../../types/images');
 
 // const pathToUploadsDir = path.resolve(
 //     __dirname,
@@ -114,9 +114,14 @@ const UploadImage = {
 
 const DeleteImage = {
     type: new GraphQLNonNull(GraphQLBoolean),
+    // args: {
+    //     deleteImageInput: {
+    //         type: new GraphQLNonNull(DeleteImageInput)
+    //     }
+    // },
     args: {
-        deleteImageInput: {
-            type: new GraphQLNonNull(DeleteImageInput)
+        id: {
+            type: imageID
         }
     },
     resolve: async (parent, args, context) => {
@@ -130,22 +135,19 @@ const DeleteImage = {
             if (!userID || !username)
                 throw new CustomError('You need to login first!', 401);
 
-            const {
-                deleteImageInput: { cloudImageID, cloudImageName }
-            } = args;
+            const toDeleteImage = await ImagesModel.findById(args.id);
+
+            if (!toDeleteImage)
+                throw new CustomError('Image to delete not found!', 404);
 
             const deletedImages = await new CloudStorage().delete(
                 userID,
-                cloudImageName
+                toDeleteImage.cloudImageName
             );
 
             if (deletedImages.length <= 0) return false;
 
-            await ImagesModel.findOneAndDelete({
-                userID,
-                cloudImageID,
-                cloudImageName
-            });
+            await ImagesModel.findByIdAndDelete(args.id);
 
             return true;
         } catch (error) {

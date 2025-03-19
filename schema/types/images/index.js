@@ -12,6 +12,8 @@ const UploadImageType = new GraphQLNonNull(
     new GraphQLScalarType(GraphQLUpload)
 );
 
+const imageID = new GraphQLNonNull(GraphQLID);
+
 const ImageType = new GraphQLObjectType({
     name: 'ImageType',
     fields: {
@@ -80,6 +82,7 @@ const FetchImageInput = new GraphQLInputObjectType({
 
 module.exports = {
     ImageType,
+    imageID,
     UploadImageType,
     ImagesURLInfo,
     DeleteImageInput,

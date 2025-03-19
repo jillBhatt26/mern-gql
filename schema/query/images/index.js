@@ -2,7 +2,11 @@ const { GraphQLList, GraphQLNonNull } = require('graphql');
 const CloudStorage = require('../../../common/CloudStorage');
 const CustomError = require('../../../common/CustomError');
 const ImagesModel = require('../../../models/Image');
-const { ImagesURLInfo, FetchImageInput } = require('../../types/images');
+const {
+    ImagesURLInfo,
+    FetchImageInput,
+    imageID
+} = require('../../types/images');
 
 const FetchUserImagesQuery = {
     type: new GraphQLNonNull(new GraphQLList(ImagesURLInfo)),
@@ -53,8 +57,8 @@ const FetchUserImagesQuery = {
 const FetchUserImage = {
     type: ImagesURLInfo,
     args: {
-        fetchImageInput: {
-            type: new GraphQLNonNull(FetchImageInput)
+        id: {
+            type: imageID
         }
     },
     resolve: async (parent, args, context) => {
@@ -66,32 +70,20 @@ const FetchUserImage = {
             if (!session || !session.userID || !session.username)
                 throw new CustomError('You need to login first!', 401);
 
-            const { cloudImageName, cloudImageID } = args.fetchImageInput;
+            const image = await ImagesModel.findById(args.id);
 
-            if (!cloudImageName || !cloudImageID)
-                throw new CustomError(
-                    'Incomplete image details provided!',
-                    400
-                );
-
-            const userImage = await ImagesModel.findOne({
-                cloudImageName,
-                cloudImageID,
-                userID: session.userID
-            });
-
-            if (!userImage)
+            if (!image)
                 throw new CustomError('Requested image not found!', 404);
 
             const { signedUrl: imageSignedURL } =
                 await new CloudStorage().fetch(
-                    `${session.userID}/${cloudImageName}`
+                    `${session.userID}/${image.cloudImageName}`
                 );
 
             return {
-                _id: userImage._id,
-                cloudImageID,
-                cloudImageName,
+                _id: image._id,
+                cloudImageID: image.cloudImageID,
+                cloudImageName: image.cloudImageName,
                 url: imageSignedURL
             };
         } catch (error) {
