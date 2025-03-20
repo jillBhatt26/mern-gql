@@ -2,7 +2,9 @@ const { GraphQLNonNull, GraphQLBoolean } = require('graphql');
 const { hash: hashPassword, verify: verifyPassword } = require('argon2');
 const UserModel = require('../../../models/User');
 const TodosModel = require('../../../models/Todo');
+const ImagesModel = require('../../../models/Image');
 const CustomError = require('../../../common/CustomError');
+const CloudStorage = require('../../../common/CloudStorage');
 const {
     LoginUserInputType,
     SignupUserInputType,
@@ -312,8 +314,12 @@ const DeleteUser = {
 
             const isLoggedOut = await destroySession(session);
 
-            // Delete all the todos of the user to be deleted first
-            await TodosModel.deleteMany({ userID: session.userID });
+            // Delete all the todos and Images of the user to be deleted first
+            await Promise.all([
+                new CloudStorage().deleteFolderAndFiles(session.userID),
+                TodosModel.deleteMany({ userID: session.userID }),
+                ImagesModel.deleteMany({ userID: session.userID })
+            ]);
 
             const deletedUser = await UserModel.findByIdAndDelete(
                 session.userID

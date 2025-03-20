@@ -4,6 +4,7 @@ import Gallery from '../components/Gallery';
 import Nav from '../shared/Nav';
 import Footer from '../shared/Footer';
 import { FETCH_USER_IMAGES } from '../services/query/Image';
+import useAuthStore from '../stores/auth';
 import useImagesStore from '../stores/images';
 
 const LoadingPage = lazy(() => import('./Loading'));
@@ -18,6 +19,7 @@ const GalleryPage = () => {
         fetchPolicy: 'network-only' // NOTE: We're mandating to make a backend call and fetch the latest state of user images. Don't serve the state from the cache.
     });
     const setUserImages = useImagesStore(state => state.setUserImages);
+    const authUser = useAuthStore(state => state.authUser);
 
     // effects
     useEffect(() => {
@@ -26,8 +28,6 @@ const GalleryPage = () => {
 
     useEffect(() => {
         if (!data || !data.FetchUserImagesQuery) return;
-
-        console.log('FetchUserImagesQuery: ', data.FetchUserImagesQuery);
 
         if (data.FetchUserImagesQuery) setUserImages(data.FetchUserImagesQuery);
     }, [data, setUserImages]);
@@ -48,7 +48,11 @@ const GalleryPage = () => {
 
             <div className="container">
                 <div className="my-5">
-                    <h1 className="text-center">Gallery</h1>
+                    {authUser && (
+                        <h3 className="text-center">
+                            {authUser.username}&apos;s Gallery
+                        </h3>
+                    )}
 
                     {fetchImagesError && (
                         <div className="alert alert-dismissible alert-danger mt-5">

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import UserInfoForm from '../components/UserInfoForm';
-import DeleteAccountModal from '../components/DeleteAccountModal';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { DELETE_USER } from '../services/mutation/User';
 import { FETCH_ACTIVE_USER } from '../services/query/User';
 import Nav from '../shared/Nav';
@@ -92,10 +92,12 @@ const SettingsPage = () => {
 
             <Footer />
 
-            <DeleteAccountModal
-                showDeleteUserConfirmModal={showDeleteUserConfirmModal}
-                setShowDeleteUserConfirmModal={setShowDeleteUserConfirmModal}
-                handleDeleteUser={handleDeleteUser}
+            <ConfirmDeleteModal
+                isOpen={showDeleteUserConfirmModal}
+                onClose={() => setShowDeleteUserConfirmModal(false)}
+                onConfirm={handleDeleteUser}
+                message="This action is irreversible. Your account and all your data will be permanently deleted. Wish to continue?"
+                confirmButtonLabel="Delete Account"
             />
         </>
     );

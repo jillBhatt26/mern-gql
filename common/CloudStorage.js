@@ -127,6 +127,60 @@ class CloudStorage {
                 return reject(new CustomError('File delete failed!', 500));
             }
         });
+
+    fetchFolderAndFiles = userID =>
+        new Promise(async (resolve, reject) => {
+            try {
+                const { data, error } = await supabase.storage
+                    .from(imageBucket)
+                    .list(`${userID}/`, {
+                        recursive: true // Include subfolders if present
+                    });
+
+                if (error)
+                    throw new CustomError(
+                        error.message ?? 'Fetch folder and files failed!',
+                        error.code ?? 500
+                    );
+
+                return resolve(data);
+            } catch (error) {
+                if (error instanceof CustomError) return reject(error);
+
+                return reject(
+                    new CustomError('Failed to fetch folder and files!', 500)
+                );
+            }
+        });
+
+    deleteFolderAndFiles = async userID =>
+        new Promise(async (resolve, reject) => {
+            try {
+                const filesData = await this.fetchFolderAndFiles(userID);
+
+                const filesToDelete = filesData.map(
+                    file => `${userID}/${file.name}`
+                );
+
+                const { data, error } = await supabase.storage
+                    .from(imageBucket)
+                    .remove(filesToDelete);
+
+                if (error)
+                    throw new CustomError(
+                        error.message ?? 'Delete folder and files failed!',
+                        error.code ?? 500
+                    );
+
+                return resolve(data);
+            } catch (error) {
+                if (error instanceof CustomError) return reject(error);
+
+                return reject(
+                    new CustomError('Failed to delete folder and files!', 500)
+                );
+            }
+        });
 }
 
 module.exports = CloudStorage;

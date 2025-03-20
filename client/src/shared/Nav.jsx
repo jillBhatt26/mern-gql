@@ -14,6 +14,7 @@ const Nav = () => {
     // states
     const [navButtonLabel, setNavButtonLabel] = useState('Signup');
     const [disableNavButton, setDisableNavButton] = useState(false);
+    const [disableAddImageButton, setDisableAddImageButton] = useState(false);
     const [showAddImageFormModal, setShowAddImageFormModal] = useState(false);
 
     // hooks
@@ -102,6 +103,10 @@ const Nav = () => {
                 break;
         }
     }, [location.pathname, authUser]);
+
+    useEffect(() => {
+        setDisableAddImageButton(userImages.length >= 10);
+    }, [userImages]);
 
     // event handlers
     const handleNavButtonClick = e => {
@@ -228,6 +233,7 @@ const Nav = () => {
                                         onClick={() =>
                                             setShowAddImageFormModal(true)
                                         }
+                                        disabled={disableAddImageButton}
                                     >
                                         New Image
                                     </button>

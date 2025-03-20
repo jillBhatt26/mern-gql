@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { lazy, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import Nav from '../shared/Nav';
 import Footer from '../shared/Footer';
 import Image from '../shared/Image';
@@ -16,6 +17,8 @@ const ViewPage = () => {
     const [currentImageIndex, setCurrentImageIndex] = useState(-1);
     const [previousImageID, setPreviousImageID] = useState(null);
     const [nextImageID, setNextImageID] = useState(null);
+    const [showDeleteImageConfirmModal, setShowDeleteImageConfirmModal] =
+        useState(false);
 
     // hooks
     const userImages = useImagesStore(state => state.userImages);
@@ -131,7 +134,7 @@ const ViewPage = () => {
                 )}
 
                 {/* Image */}
-                <div className="col-sm-12 col-md-10 mx-auto">
+                <div className="col-sm-12 col-md-10 mx-auto d-flex justify-content-center">
                     {data && (
                         <Image
                             src={data.FetchUserImage.url}
@@ -167,13 +170,21 @@ const ViewPage = () => {
                         </button>
                         <button
                             className="btn btn-danger"
-                            onClick={() => deleteImage()}
+                            onClick={() => setShowDeleteImageConfirmModal(true)}
                         >
                             Delete
                         </button>
                     </div>
                 )}
             </div>
+
+            <ConfirmDeleteModal
+                isOpen={showDeleteImageConfirmModal}
+                onClose={() => setShowDeleteImageConfirmModal(false)}
+                onConfirm={() => deleteImage()}
+                message="This action is irreversible. Your image will be permanently deleted. Wish to proceed?"
+                confirmButtonLabel="Delete Image"
+            />
 
             <Footer />
         </>
