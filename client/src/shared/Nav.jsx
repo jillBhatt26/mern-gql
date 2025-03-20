@@ -4,6 +4,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Logo from '../assets/gql-logo.png';
 import { apolloClient } from '../config/apollo';
 import AddImageFormModal from '../components/AddImageFormModal';
+import TodoFormModal from '../components/TodoFormModal';
 import { LOGOUT_USER } from '../services/mutation/User';
 // import { FETCH_ACTIVE_USER } from '../services/query/User';
 // import { FETCH_USER_IMAGES } from '../services/query/Image';
@@ -16,6 +17,7 @@ const Nav = () => {
     const [disableNavButton, setDisableNavButton] = useState(false);
     const [disableAddImageButton, setDisableAddImageButton] = useState(false);
     const [showAddImageFormModal, setShowAddImageFormModal] = useState(false);
+    const [showAddTodoFormModal, setShowAddTodoFormModal] = useState(false);
 
     // hooks
     const navigate = useNavigate();
@@ -224,6 +226,21 @@ const Nav = () => {
                     </ul>
 
                     <div className="d-sm-block d-sm-my-2 d-lg-flex gap-2">
+                        {location.pathname === '/' && (
+                            <div className="d-grid">
+                                <button
+                                    type="button"
+                                    className="btn btn-success fw-bold mt-1 mb-3 mx-3 m-md-0"
+                                    onClick={() =>
+                                        setShowAddTodoFormModal(true)
+                                    }
+                                    disabled={disableAddImageButton}
+                                >
+                                    Add Todo
+                                </button>
+                            </div>
+                        )}
+
                         {location.pathname.includes('gallery') &&
                             userImages.length > 0 && (
                                 <div className="d-grid">
@@ -257,6 +274,12 @@ const Nav = () => {
             <AddImageFormModal
                 showAddImageFormModal={showAddImageFormModal}
                 setShowAddImageFormModal={setShowAddImageFormModal}
+            />
+
+            <TodoFormModal
+                showTodoFormModal={showAddTodoFormModal}
+                setShowTodoFormModal={setShowAddTodoFormModal}
+                purpose="Add"
             />
         </nav>
     );
