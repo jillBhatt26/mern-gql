@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import Image from '../shared/Image';
-import AddImageModal from './AddImageFormModal';
 import useImagesStore from '../stores/images';
+import AddImageModal from './AddImageFormModal';
 
 const Gallery = () => {
     // states
@@ -19,14 +20,14 @@ const Gallery = () => {
 
     return userImages.length > 0 ? (
         <div className="container">
-            <div className="d-grid">
-                <div className="row g-3">
+            <ResponsiveMasonry
+                columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}
+                gutterBreakpoints={{ 350: '12px', 750: '16px', 900: '24px' }}
+            >
+                <Masonry>
                     {userImages.length > 0 &&
                         userImages.map((img, idx) => (
-                            <div
-                                key={idx}
-                                className="col-sm-12 col-md-6 col-lg-4 mw-100"
-                            >
+                            <div key={idx}>
                                 <Link to={`/view/${img._id}`}>
                                     <Image
                                         src={img.url}
@@ -35,8 +36,8 @@ const Gallery = () => {
                                 </Link>
                             </div>
                         ))}
-                </div>
-            </div>
+                </Masonry>
+            </ResponsiveMasonry>
         </div>
     ) : (
         <div className="container mt-5 mx-auto">

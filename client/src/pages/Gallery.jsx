@@ -14,7 +14,9 @@ const GalleryPage = () => {
     const [fetchImagesError, setFetchImagesError] = useState(null);
 
     // hooks
-    const { data, error, loading } = useQuery(FETCH_USER_IMAGES);
+    const { data, error, loading } = useQuery(FETCH_USER_IMAGES, {
+        fetchPolicy: 'network-only' // NOTE: We're mandating to make a backend call and fetch the latest state of user images. Don't serve the state from the cache.
+    });
     const setUserImages = useImagesStore(state => state.setUserImages);
 
     // effects
@@ -23,7 +25,9 @@ const GalleryPage = () => {
     }, [loading]);
 
     useEffect(() => {
-        if (!data) return;
+        if (!data || !data.FetchUserImagesQuery) return;
+
+        console.log('FetchUserImagesQuery: ', data.FetchUserImagesQuery);
 
         if (data.FetchUserImagesQuery) setUserImages(data.FetchUserImagesQuery);
     }, [data, setUserImages]);

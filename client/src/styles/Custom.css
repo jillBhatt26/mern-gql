@@ -29,9 +29,3 @@ button:disabled:hover {
     width: 500px;
     max-width: 90vw;
 }
-
-/* .img-container */
-.img-container:hover {
-    cursor: pointer;
-    position: relative;
-}

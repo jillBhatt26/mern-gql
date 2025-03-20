@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Logo from '../assets/gql-logo.png';
+import { apolloClient } from '../config/apollo';
 import AddImageFormModal from '../components/AddImageFormModal';
 import { LOGOUT_USER } from '../services/mutation/User';
-import { FETCH_ACTIVE_USER } from '../services/query/User';
+// import { FETCH_ACTIVE_USER } from '../services/query/User';
+// import { FETCH_USER_IMAGES } from '../services/query/Image';
 import useAuthStore from '../stores/auth';
 import useImagesStore from '../stores/images';
 
@@ -19,25 +21,39 @@ const Nav = () => {
     const location = useLocation();
     const authUser = useAuthStore(state => state.authUser);
     const userImages = useImagesStore(state => state.userImages);
+    const removeAllUserImages = useImagesStore(
+        state => state.removeAllUserImages
+    );
     const unsetAuthUser = useAuthStore(state => state.unsetAuthUser);
     const [logoutUser, { loading }] = useMutation(LOGOUT_USER, {
         onCompleted: data => {
             if (data && data.LogoutUser) {
                 unsetAuthUser();
+                removeAllUserImages();
                 return navigate('/login', { replace: true });
             }
         },
         onError: () => {
             navigate('/error', { replace: true });
         },
-        update: cache => {
+        update: () => {
             // NOTE: Most important step. Please clear the FETCH_ACTIVE_USER cache and delete all the data as it will show a logged in user even though the session is deleted in the backend.
-            cache.writeQuery({
-                query: FETCH_ACTIVE_USER,
-                data: {
-                    FetchActiveUser: null
-                }
-            });
+
+            // cache.writeQuery({
+            //     query: FETCH_ACTIVE_USER,
+            //     data: {
+            //         FetchActiveUser: null
+            //     }
+            // });
+
+            // cache.writeQuery({
+            //     query: FETCH_USER_IMAGES,
+            //     data: {
+            //         FetchUserImagesQuery: []
+            //     }
+            // });
+
+            apolloClient.clearStore();
         }
     });
 

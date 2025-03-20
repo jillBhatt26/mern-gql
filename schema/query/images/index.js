@@ -21,6 +21,8 @@ const FetchUserImagesQuery = {
 
             const userImages = await ImagesModel.find({
                 userID: session.userID
+            }).sort({
+                createdAt: -1
             });
 
             const cloudStorage = new CloudStorage();

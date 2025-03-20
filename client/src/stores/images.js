@@ -19,6 +19,12 @@ const useImagesStore = create(set => ({
             ...state,
             userImages: state.userImages.filter(img => img._id !== imageID)
         }));
+    },
+    removeAllUserImages: () => {
+        set(state => ({
+            ...state,
+            userImages: []
+        }));
     }
 }));
 
