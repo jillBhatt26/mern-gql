@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
+import { useMutation } from '@apollo/client';
+import { CREATE_TODO } from '../services/mutation/Todo';
 import Modal from '../shared/Modal';
+import useTodoStore from '../stores/todo';
 
 const TodoFormModal = ({
     showTodoFormModal,
@@ -15,22 +18,54 @@ const TodoFormModal = ({
         todoToUpdate ? todoToUpdate.description : ''
     );
     const [inputTodoStatus, setInputTodoStatus] = useState(
-        todoToUpdate ? todoToUpdate.status : 'pending'
+        todoToUpdate ? todoToUpdate.status : 'PENDING'
     );
     const [disableFormSubmitButton, setDisableFormSubmitButton] =
         useState(true);
     const [todoFormError, setTodoFormError] = useState(null);
 
+    // hooks
+    const pushNewUserTodo = useTodoStore(state => state.pushNewUserTodo);
+    const [createTodo, { loading }] = useMutation(CREATE_TODO, {
+        variables: {
+            createTodoInput: {
+                description: inputTodoDescription.trim(),
+                name: inputTodoName.trim(),
+                status: inputTodoStatus
+            }
+        },
+        onCompleted: data => {
+            if (data.CreateTodo) {
+                pushNewUserTodo(data.CreateTodo);
+                setShowTodoFormModal(false);
+            }
+        },
+        onError: error => {
+            if (error) {
+                const errorMessage = error.toString().split(':').pop();
+
+                setTodoFormError(errorMessage);
+            }
+        }
+    });
+
     // effects
     useEffect(() => {
-        setDisableFormSubmitButton(false);
-    }, []);
+        setDisableFormSubmitButton(todoFormError !== null || loading);
+    }, [todoFormError, loading]);
 
     // event handlers
     const handleTodoFormSubmit = e => {
         e.preventDefault();
 
-        setShowTodoFormModal(false);
+        if (
+            !inputTodoName.trim() ||
+            !inputTodoDescription.trim() ||
+            !inputTodoStatus
+        )
+            return setTodoFormError('Please provide all details!');
+
+        createTodo();
     };
 
     return (
@@ -106,9 +141,9 @@ const TodoFormModal = ({
                             value={inputTodoStatus}
                             onChange={e => setInputTodoStatus(e.target.value)}
                         >
-                            <option value="pending">Pending</option>
-                            <option value="progress">Progress</option>
-                            <option value="completed">Completed</option>
+                            <option value="PENDING">Pending</option>
+                            <option value="PROGRESS">Progress</option>
+                            <option value="COMPLETED">Completed</option>
                         </select>
                     </div>
 

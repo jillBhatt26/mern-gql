@@ -72,7 +72,12 @@ const Modal = ({ isOpen, onClose, onConfirm, children, ...props }) => {
     return createPortal(
         <>
             {isOpen && (
-                <div className="dialog-overlay" {...props}>
+                <div
+                    className="dialog-overlay"
+                    role="dialog"
+                    aria-modal="true"
+                    {...props}
+                >
                     <div
                         className="dialog-container bg-primary my-auto"
                         ref={modalRef}

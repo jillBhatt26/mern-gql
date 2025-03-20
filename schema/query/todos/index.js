@@ -15,7 +15,9 @@ const todosQuery = {
 
             const { userID } = session;
 
-            const todos = await TodoModel.find({ userID });
+            const todos = await TodoModel.find({ userID }).sort({
+                createdAt: -1
+            });
 
             return todos;
         } catch (error) {
