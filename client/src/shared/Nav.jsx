@@ -10,6 +10,7 @@ import { LOGOUT_USER } from '../services/mutation/User';
 // import { FETCH_USER_IMAGES } from '../services/query/Image';
 import useAuthStore from '../stores/auth';
 import useImagesStore from '../stores/images';
+import useTodoStore from '../stores/todo';
 
 const Nav = () => {
     // states
@@ -24,6 +25,7 @@ const Nav = () => {
     const location = useLocation();
     const authUser = useAuthStore(state => state.authUser);
     const userImages = useImagesStore(state => state.userImages);
+    const userTodos = useTodoStore(state => state.userTodos);
     const removeAllUserImages = useImagesStore(
         state => state.removeAllUserImages
     );
@@ -174,6 +176,7 @@ const Nav = () => {
                     />
                     GQL TM
                 </Link>
+
                 <button
                     className="navbar-toggler"
                     type="button"
@@ -226,7 +229,7 @@ const Nav = () => {
                     </ul>
 
                     <div className="d-sm-block d-sm-my-2 d-lg-flex gap-2">
-                        {location.pathname === '/' && (
+                        {location.pathname === '/' && userTodos.length > 0 && (
                             <div className="d-grid">
                                 <button
                                     type="button"

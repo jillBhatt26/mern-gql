@@ -5,7 +5,8 @@ const ConfirmDeleteModal = ({
     onClose,
     onConfirm,
     message,
-    confirmButtonLabel
+    confirmButtonLabel,
+    error = null
 }) => {
     return (
         <Modal isOpen={isOpen} onClose={onClose} onConfirm={onConfirm}>
@@ -16,7 +17,13 @@ const ConfirmDeleteModal = ({
                 <Modal.Header.CloseButton />
             </Modal.Header>
             <Modal.Body>
-                <p className="ml-5 mb-4">{message}</p>
+                {error ? (
+                    <div className="alert alert-dismissible alert-danger mt-5">
+                        {error}
+                    </div>
+                ) : (
+                    <p className="ml-5 mb-4">{message}</p>
+                )}
             </Modal.Body>
             <Modal.Footer className="d-flex justify-center">
                 <Modal.Footer.ConfirmButton className="btn btn-danger">

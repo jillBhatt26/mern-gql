@@ -1,4 +1,36 @@
+import { useState } from 'react';
+import { useMutation } from '@apollo/client';
+import { DELETE_TODO, UPDATE_TODO } from '../services/mutation/Todo';
+import useTodoState from '../stores/todo';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
+
 const TodoListItem = ({ todo }) => {
+    // states
+    const [showDeleteTodoModal, setShowDeleteTodoModal] = useState(false);
+    const [todoError, setTodoError] = useState(null);
+
+    // hooks
+    const userTodos = useTodoState(state => state.userTodos);
+    const setUserTodos = useTodoState(state => state.setUserTodos);
+    const [deleteTodo, { loading }] = useMutation(DELETE_TODO, {
+        variables: {
+            id: todo.id
+        },
+        onCompleted: data => {
+            if (data.DeleteTodo) {
+                setUserTodos(userTodos.filter(t => t.id !== todo.id));
+                setShowDeleteTodoModal(false);
+            }
+        },
+        onError: error => {
+            const errorMessage = error.toString().split(':').pop();
+
+            setTodoError(errorMessage);
+        }
+    });
+
+    // event handlers
+
     return (
         <tr>
             <th scope="row">{todo.name}</th>
@@ -6,8 +38,26 @@ const TodoListItem = ({ todo }) => {
             <td>{todo.status}</td>
             <td className="d-flex gap-3">
                 <button className="btn btn-sm btn-warning">Update</button>
-                <button className="btn btn-sm btn-danger">Delete</button>
+                <button
+                    className="btn btn-sm btn-danger"
+                    onClick={() => setShowDeleteTodoModal(true)}
+                >
+                    Delete
+                </button>
             </td>
+
+            <ConfirmDeleteModal
+                isOpen={showDeleteTodoModal}
+                onClose={() => setShowDeleteTodoModal(false)}
+                onConfirm={deleteTodo}
+                message={
+                    loading
+                        ? 'Loading...'
+                        : 'This action is irreversible. Your todo will be permanently deleted. Wish to proceed?'
+                }
+                confirmButtonLabel="Delete Todo"
+                error={todoError}
+            />
         </tr>
     );
 };

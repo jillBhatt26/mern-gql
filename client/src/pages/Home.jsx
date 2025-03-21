@@ -1,17 +1,20 @@
+import { lazy, useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
+import TodoFormModal from '../components/TodoFormModal';
 import TodoList from '../components/TodoList';
 import { FETCH_USER_TODOS } from '../services/query/Todo';
 import Nav from '../shared/Nav';
 import Footer from '../shared/Footer';
 import useTodoStore from '../stores/todo';
-import { lazy, useEffect, useState } from 'react';
 const LoadingPage = lazy(() => import('./Loading'));
 
 const HomePage = () => {
     // states
     const [fetchUserTodosError, setFetchUserTodosError] = useState(null);
+    const [showTodoFormModal, setShowTodoFormModal] = useState(false);
 
     // hooks
+    const userTodos = useTodoStore(state => state.userTodos);
     const setUserTodos = useTodoStore(state => state.setUserTodos);
     const { data, error, loading } = useQuery(FETCH_USER_TODOS, {
         fetchPolicy: 'network-only'
@@ -51,10 +54,37 @@ const HomePage = () => {
                     </div>
                 )}
 
-                <TodoList />
+                {userTodos.length > 0 ? (
+                    <TodoList />
+                ) : (
+                    <div className="w-100">
+                        <h3 className="text-center">
+                            You haven&apos;t added any todos yet.
+                            <div className="d-grid mt-5">
+                                <div className="col-sm-12 col-md-4 mx-auto">
+                                    <button
+                                        type="button"
+                                        className="btn btn-success"
+                                        onClick={() =>
+                                            setShowTodoFormModal(true)
+                                        }
+                                    >
+                                        Add new todo
+                                    </button>
+                                </div>
+                            </div>
+                        </h3>
+                    </div>
+                )}
             </div>
 
             <Footer />
+
+            <TodoFormModal
+                showTodoFormModal={showTodoFormModal}
+                setShowTodoFormModal={setShowTodoFormModal}
+                purpose="Add"
+            />
         </>
     );
 };
