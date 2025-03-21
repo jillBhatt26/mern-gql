@@ -63,19 +63,21 @@ const HomePage = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <th scope="row">Default</th>
-                                    <td>Column content</td>
-                                    <td>Column content</td>
-                                    <td className="d-flex gap-3">
-                                        <button className="btn btn-sm btn-warning">
-                                            Update
-                                        </button>
-                                        <button className="btn btn-sm btn-danger">
-                                            Delete
-                                        </button>
-                                    </td>
-                                </tr>
+                                {userTodos.map(todo => (
+                                    <tr key={todo.id}>
+                                        <th scope="row">{todo.name}</th>
+                                        <td>{todo.description}</td>
+                                        <td>{todo.status}</td>
+                                        <td className="d-flex gap-3">
+                                            <button className="btn btn-sm btn-warning">
+                                                Update
+                                            </button>
+                                            <button className="btn btn-sm btn-danger">
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
