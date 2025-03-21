@@ -29,3 +29,17 @@ button:disabled:hover {
     width: 500px;
     max-width: 90vw;
 }
+
+/* table */
+
+th,
+td {
+    min-width: 200px; /* Adjust this value as needed */
+    word-break: break-word;
+}
+
+.table-responsive {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-wrap: break-word;
+}

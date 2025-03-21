@@ -52,33 +52,33 @@ const HomePage = () => {
                 )}
 
                 {userTodos.length > 0 && (
-                    <table className="table table-hover mt-5">
-                        <thead>
-                            <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col">Description</th>
-                                <th scope="col">Status</th>
-                                <th scope="col"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {userTodos.map(todo => (
-                                <tr key={todo.id} className="table-active">
-                                    <th scope="row">{todo.name}</th>
-                                    <td>{todo.description}</td>
-                                    <td>{todo.status}</td>
-                                    <td className="d-flex justify-content-center gap-2">
-                                        <button className="btn btn-warning">
+                    <div className="table-responsive">
+                        <table className="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Description</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Default</th>
+                                    <td>Column content</td>
+                                    <td>Column content</td>
+                                    <td className="d-flex gap-3">
+                                        <button className="btn btn-sm btn-warning">
                                             Update
                                         </button>
-                                        <button className="btn btn-danger">
+                                        <button className="btn btn-sm btn-danger">
                                             Delete
                                         </button>
                                     </td>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 )}
             </div>
 
