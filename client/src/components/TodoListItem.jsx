@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { DELETE_TODO, UPDATE_TODO } from '../services/mutation/Todo';
 import useTodoState from '../stores/todo';
+import TodoFormModal from './TodoFormModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 const TodoListItem = ({ todo }) => {
     // states
     const [showDeleteTodoModal, setShowDeleteTodoModal] = useState(false);
+    const [showUpdateTodoModal, setShowUpdateTodoModal] = useState(false);
     const [todoError, setTodoError] = useState(null);
 
     // hooks
@@ -37,7 +39,12 @@ const TodoListItem = ({ todo }) => {
             <td>{todo.description}</td>
             <td>{todo.status}</td>
             <td className="d-flex gap-3">
-                <button className="btn btn-sm btn-warning">Update</button>
+                <button
+                    className="btn btn-sm btn-warning"
+                    onClick={() => setShowUpdateTodoModal(true)}
+                >
+                    Update
+                </button>
                 <button
                     className="btn btn-sm btn-danger"
                     onClick={() => setShowDeleteTodoModal(true)}
@@ -57,6 +64,13 @@ const TodoListItem = ({ todo }) => {
                 }
                 confirmButtonLabel="Delete Todo"
                 error={todoError}
+            />
+
+            <TodoFormModal
+                showTodoFormModal={showUpdateTodoModal}
+                setShowTodoFormModal={setShowUpdateTodoModal}
+                purpose="Update"
+                todoToUpdate={todo}
             />
         </tr>
     );
