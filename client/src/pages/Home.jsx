@@ -1,4 +1,5 @@
 import { useQuery } from '@apollo/client';
+import TodoList from '../components/TodoList';
 import { FETCH_USER_TODOS } from '../services/query/Todo';
 import Nav from '../shared/Nav';
 import Footer from '../shared/Footer';
@@ -11,7 +12,6 @@ const HomePage = () => {
     const [fetchUserTodosError, setFetchUserTodosError] = useState(null);
 
     // hooks
-    const userTodos = useTodoStore(state => state.userTodos);
     const setUserTodos = useTodoStore(state => state.setUserTodos);
     const { data, error, loading } = useQuery(FETCH_USER_TODOS, {
         fetchPolicy: 'network-only'
@@ -51,37 +51,7 @@ const HomePage = () => {
                     </div>
                 )}
 
-                {userTodos.length > 0 && (
-                    <div className="table-responsive">
-                        <table className="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Description</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {userTodos.map(todo => (
-                                    <tr key={todo.id}>
-                                        <th scope="row">{todo.name}</th>
-                                        <td>{todo.description}</td>
-                                        <td>{todo.status}</td>
-                                        <td className="d-flex gap-3">
-                                            <button className="btn btn-sm btn-warning">
-                                                Update
-                                            </button>
-                                            <button className="btn btn-sm btn-danger">
-                                                Delete
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
+                <TodoList />
             </div>
 
             <Footer />
