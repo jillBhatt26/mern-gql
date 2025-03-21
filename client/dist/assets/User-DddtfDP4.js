@@ -1,4 +1,4 @@
-import{g as e}from"./index-BuNdGTO-.js";const s=e`
+import{k as e}from"./index-DDAoFsC7.js";const s=e`
     query FetchActiveUser {
         FetchActiveUser {
             _id

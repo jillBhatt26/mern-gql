@@ -1,4 +1,4 @@
-import{g as e}from"./index-BuNdGTO-.js";const I=e`
+import{k as e}from"./index-DDAoFsC7.js";const I=e`
     query UserImages {
         FetchUserImagesQuery {
             cloudImageID

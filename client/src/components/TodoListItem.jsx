@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { DELETE_TODO } from '../services/mutation/Todo';
+import { FETCH_USER_TODOS } from '../services/query/Todo';
 import useTodoState from '../stores/todo';
 import TodoFormModal from './TodoFormModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
@@ -29,6 +30,16 @@ const TodoListItem = ({ todo }) => {
             const errorMessage = error.toString().split(':').pop();
 
             setTodoError(errorMessage);
+        },
+        update: (cache, { data }) => {
+            if (data.DeleteTodo) {
+                cache.writeQuery({
+                    query: FETCH_USER_TODOS,
+                    data: {
+                        todos: userTodos.filter(t => t.id !== todo.id)
+                    }
+                });
+            }
         }
     });
 
@@ -77,12 +88,14 @@ const TodoListItem = ({ todo }) => {
                 error={todoError}
             />
 
-            <TodoFormModal
-                showTodoFormModal={showUpdateTodoModal}
-                setShowTodoFormModal={setShowUpdateTodoModal}
-                purpose="Update"
-                todoToUpdate={todo}
-            />
+            {showUpdateTodoModal && (
+                <TodoFormModal
+                    showTodoFormModal={showUpdateTodoModal}
+                    setShowTodoFormModal={setShowUpdateTodoModal}
+                    purpose="Update"
+                    todoToUpdate={todo}
+                />
+            )}
         </tr>
     );
 };

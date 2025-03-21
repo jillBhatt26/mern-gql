@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { CREATE_TODO, UPDATE_TODO } from '../services/mutation/Todo';
+import { FETCH_USER_TODOS } from '../services/query/Todo';
 import Modal from '../shared/Modal';
 import useTodoStore from '../stores/todo';
 
@@ -50,6 +51,16 @@ const TodoFormModal = ({
 
                     setTodoFormError(errorMessage);
                 }
+            },
+            update: (cache, { data }) => {
+                if (data.CreateTodo) {
+                    cache.writeQuery({
+                        query: FETCH_USER_TODOS,
+                        data: {
+                            todos: userTodos
+                        }
+                    });
+                }
             }
         }
     );
@@ -79,6 +90,16 @@ const TodoFormModal = ({
                     const errorMessage = error.toString().split(':').pop();
 
                     setTodoFormError(errorMessage);
+                }
+            },
+            update: (cache, { data }) => {
+                if (data.UpdateTodo) {
+                    cache.writeQuery({
+                        query: FETCH_USER_TODOS,
+                        data: {
+                            todos: userTodos
+                        }
+                    });
                 }
             }
         }
