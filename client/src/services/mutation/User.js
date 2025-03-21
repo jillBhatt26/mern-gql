@@ -7,6 +7,12 @@ const LOGIN_USER = gql`
             _id
             username
             email
+            todos {
+                id
+                name
+                description
+                status
+            }
         }
     }
 `;
@@ -23,6 +29,12 @@ const SIGNUP_USER = gql`
             _id
             username
             email
+            todos {
+                id
+                name
+                description
+                status
+            }
         }
     }
 `;
@@ -33,6 +45,12 @@ const UPDATE_USER = gql`
             _id
             username
             email
+            todos {
+                id
+                name
+                description
+                status
+            }
         }
     }
 `;
