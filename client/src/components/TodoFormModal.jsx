@@ -21,7 +21,7 @@ const TodoFormModal = ({
         todoToUpdate ? todoToUpdate.status : 'PENDING'
     );
     const [disableFormSubmitButton, setDisableFormSubmitButton] =
-        useState(true);
+        useState(false);
     const [todoFormError, setTodoFormError] = useState(null);
 
     // hooks
@@ -69,9 +69,9 @@ const TodoFormModal = ({
                         todos[updateTodoIndex] = data.UpdateTodo;
 
                         setUserTodos(todos);
-                    }
 
-                    handleFormClose(false);
+                        handleFormClose(false);
+                    }
                 }
             },
             onError: error => {
@@ -85,6 +85,16 @@ const TodoFormModal = ({
     );
 
     // effects
+    useEffect(() => {
+        if (purpose.toLowerCase() !== 'update' || !todoToUpdate) return;
+
+        const { name, description, status } = todoToUpdate;
+
+        setInputTodoDescription(description);
+        setInputTodoName(name);
+        setInputTodoStatus(status);
+    }, [todoToUpdate, purpose]);
+
     useEffect(() => {
         setDisableFormSubmitButton(
             todoFormError !== null || createTodoLoading || updateTodoLoading
@@ -210,7 +220,7 @@ const TodoFormModal = ({
                         >
                             <option value="PENDING">Pending</option>
                             <option value="PROGRESS">Progress</option>
-                            <option value="COMPLETED">Completed</option>
+                            <option value="COMPLETE">Complete</option>
                         </select>
                     </div>
 
@@ -229,7 +239,6 @@ const TodoFormModal = ({
                         <button
                             type="button"
                             className="btn btn-secondary"
-                            disabled={disableFormSubmitButton}
                             onClick={handleFormClose}
                         >
                             Cancel

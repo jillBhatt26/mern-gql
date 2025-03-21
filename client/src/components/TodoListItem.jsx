@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation } from '@apollo/client';
-import { DELETE_TODO, UPDATE_TODO } from '../services/mutation/Todo';
+import { DELETE_TODO } from '../services/mutation/Todo';
 import useTodoState from '../stores/todo';
 import TodoFormModal from './TodoFormModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
@@ -10,6 +10,7 @@ const TodoListItem = ({ todo }) => {
     const [showDeleteTodoModal, setShowDeleteTodoModal] = useState(false);
     const [showUpdateTodoModal, setShowUpdateTodoModal] = useState(false);
     const [todoError, setTodoError] = useState(null);
+    const [statusTextClass, setStatusTextClass] = useState('text-primary');
 
     // hooks
     const userTodos = useTodoState(state => state.userTodos);
@@ -31,13 +32,23 @@ const TodoListItem = ({ todo }) => {
         }
     });
 
-    // event handlers
+    // effects
+    useEffect(() => {
+        if (todo.status.toUpperCase() === 'PENDING')
+            return setStatusTextClass('text-danger');
+
+        if (todo.status.toUpperCase() === 'PROGRESS')
+            return setStatusTextClass('text-info');
+
+        if (todo.status.toUpperCase() === 'COMPLETE')
+            return setStatusTextClass('text-success');
+    }, [todo.status]);
 
     return (
         <tr>
             <th scope="row">{todo.name}</th>
             <td>{todo.description}</td>
-            <td>{todo.status}</td>
+            <td className={statusTextClass}>{todo.status}</td>
             <td className="d-flex gap-3">
                 <button
                     className="btn btn-sm btn-warning"
