@@ -6,7 +6,7 @@ const Footer = () => {
 
     return (
         <footer className="container footer bg-dark text-center my-5">
-            <div className="d-flex justify-content-center gap-2">
+            <div className="d-flex flex-column flex-md-row justify-content-center gap-2">
                 <span className="text-muted">
                     &copy; {new Date().getFullYear()}. Website developed by{' '}
                     <a
