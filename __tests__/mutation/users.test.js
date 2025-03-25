@@ -778,13 +778,13 @@ describe('USERS MUTATION SUITE', () => {
         });
 
         it('Should delete an existing and authenticated user', async () => {
+            expect(userToSignup).toBeDefined();
+
             const query = `
                 mutation DeleteUser {
                     DeleteUser
                 }
             `;
-
-            expect(userToSignup).toBeDefined();
 
             const response = await request(app)
                 .post(API_URL)
@@ -793,6 +793,7 @@ describe('USERS MUTATION SUITE', () => {
 
             expect(response.status).toStrictEqual(200);
             expect(response.body).toHaveProperty('data');
+            expect(response.body.data).not.toBeNull();
             expect(response.body.data.DeleteUser).toStrictEqual(true);
             expect(response.body.errors).toBeUndefined();
         });

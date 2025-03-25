@@ -162,6 +162,8 @@ class CloudStorage {
                     file => `${userID}/${file.name}`
                 );
 
+                if (!filesToDelete.length) return resolve(true);
+
                 const { data, error } = await supabase.storage
                     .from(imageBucket)
                     .remove(filesToDelete);
@@ -174,6 +176,8 @@ class CloudStorage {
 
                 return resolve(data);
             } catch (error) {
+                console.log('delete error: ', error);
+
                 if (error instanceof CustomError) return reject(error);
 
                 return reject(
