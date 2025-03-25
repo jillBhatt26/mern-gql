@@ -1,9 +1,11 @@
+const fs = require('fs');
 const path = require('path');
 const { hash: hashPassword } = require('argon2');
 const request = require('supertest');
 const initExpressApolloApp = require('../../app');
 const { TEST_DB_URL } = require('../../config/env');
 const { API_URL, TOTAL_DOC_LIMIT } = require('../../config/constants');
+const CloudStorage = require('../../common/CloudStorage');
 const { connectMongoDB, disconnectMongoDB } = require('../../db');
 const ImagesModel = require('../../models/Image');
 const UserModel = require('../../models/User');
@@ -68,38 +70,47 @@ describe('IMAGES TEST SUITE', () => {
     });
 
     describe('Upload User Image', () => {
-        it('Should check file type', async () => {
+        it('Should upload an image file type with allowed dimensions', async () => {
             expect(loggedInUserID).toBeDefined();
             expect(cookie).toBeDefined();
 
+            const filePath = path.resolve(
+                __dirname,
+                '../',
+                'files',
+                'test.jpg'
+            );
+
             const query = `
-                mutation UploadImage($image: Upload!) {
-                    UploadImage(image: $image) {
-                        _id
-                        encoding
-                        mimetype
-                        filename
-                        cloudImageID
-                        cloudImageName
-                    }
-                }
-            `;
+  mutation UploadImage($image: Upload!) {
+    UploadImage(image: $image) {
+      _id
+      encoding
+      mimetype
+      filename
+      cloudImageID
+      cloudImageName
+    }
+  }
+`;
 
             const response = await request(app)
                 .post(API_URL)
                 .set('Content-Type', 'multipart/form-data')
+                .set('apollo-requires-preflight', true)
+                .set('x-apollo-operation-name', 'UploadImage')
                 .set('Cookie', cookie)
-                .field('query', JSON.stringify({ query }))
-                .field('variables', JSON.stringify({ file: null }))
-                .attach(
-                    'image',
-                    path.resolve(__dirname, '../', 'files', 'testPPT.pptx')
-                );
+                .field(
+                    'operations',
+                    JSON.stringify({ query, variables: { image: null } })
+                )
+                .field('map', '{"0":["variables.image"]}')
+                .attach('0', filePath);
 
-            expect(response.status).toBe(400);
+            expect(response.status).toBe(200);
         });
 
-        it('Should check file size', async () => {});
+        it('Should validate file size', async () => {});
 
         it('Should check if user is authenticated', async () => {});
     });
@@ -107,8 +118,12 @@ describe('IMAGES TEST SUITE', () => {
     describe('Delete User Image', () => {});
 
     afterEach(async () => {
+        expect(loggedInUserID).toBeDefined();
+
         await UserModel.deleteMany({});
         await ImagesModel.deleteMany({});
+
+        await new CloudStorage().deleteFolderAndFiles(loggedInUserID);
     });
 
     afterAll(async () => {
