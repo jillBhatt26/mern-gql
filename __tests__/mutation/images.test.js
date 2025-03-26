@@ -183,10 +183,100 @@ describe('IMAGES TEST SUITE', () => {
                 .attach('0', filePath);
 
             expect(response.status).toBe(200);
+            expect(response.status).toBe(200);
+            expect(response.body).toHaveProperty('data');
+            expect(response.body.errors).toBeUndefined();
+            expect(response.body.data).toHaveProperty('UploadImage');
+            expect(response.body.data.UploadImage).toHaveProperty('_id');
+            expect(response.body.data.UploadImage).toHaveProperty('encoding');
+            expect(response.body.data.UploadImage).toHaveProperty('mimetype');
+            expect(response.body.data.UploadImage).toHaveProperty('filename');
+            expect(response.body.data.UploadImage).toHaveProperty(
+                'cloudImageName'
+            );
+            expect(response.body.data.UploadImage).toHaveProperty(
+                'cloudImageID'
+            );
         });
     });
 
-    describe('Delete User Image', () => {});
+    describe('Delete User Image', () => {
+        beforeEach(() => {
+            expect(loggedInUserID).toBeDefined();
+            expect(cookie).toBeDefined();
+        });
+
+        it('Should validate user authentication before deleting image', async () => {
+            const uploadQuery = `
+                mutation UploadImage($image: Upload!) {
+                    UploadImage(image: $image) {
+                        _id
+                        encoding
+                        mimetype
+                        filename
+                        cloudImageID
+                        cloudImageName
+                    }
+                }
+            `;
+
+            const filePath = path.resolve(
+                __dirname,
+                '../',
+                'files',
+                'test.jpg'
+            );
+
+            const uploadResponse = await request(app)
+                .post(API_URL)
+                .set('Content-Type', 'multipart/form-data')
+                .set('apollo-requires-preflight', true)
+                .set('x-apollo-operation-name', 'UploadImage')
+                .set('Cookie', cookie)
+                .field(
+                    'operations',
+                    JSON.stringify({
+                        query: uploadQuery,
+                        variables: { image: null }
+                    })
+                )
+                .field('map', '{"0":["variables.image"]}')
+                .attach('0', filePath);
+
+            expect(uploadResponse.status).toBe(200);
+
+            /**
+             * uploadResponse.body:  {
+[1]       data: {
+[1]         UploadImage: {
+[1]           _id: '67e447c204b4b41aabbc10c5',
+[1]           encoding: '7bit',
+[1]           mimetype: 'image/jpeg',
+[1]           filename: 'test.jpg',
+[1]           cloudImageID: 'd970b247-25ba-4d8e-8a62-d88327a5b260',
+[1]           cloudImageName: '5ad1afd7-0f02-4a4c-a17a-5082c966ae36.jpg'
+[1]         }
+[1]       }
+[1]     }
+             */
+
+            const deleteQuery = `
+                mutation DeleteImage {
+                    DeleteImage (id: "${uploadResponse.body.data.UploadImage._id}")
+                }
+            `;
+
+            const response = await request(app)
+                .post(API_URL)
+                .send({ query: deleteQuery })
+                .set('Cookie', cookie);
+
+            expect(response.status).toBe(200);
+            expect(response.body.errors).toBeUndefined();
+            expect(response.body.data).toBeDefined();
+            expect(response.body.data.DeleteImage).toStrictEqual(true);
+        });
+    });
 
     afterEach(async () => {
         await UserModel.deleteMany({});
