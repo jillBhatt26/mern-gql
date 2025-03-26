@@ -245,21 +245,6 @@ describe('IMAGES TEST SUITE', () => {
 
             expect(uploadResponse.status).toBe(200);
 
-            /**
-             * uploadResponse.body:  {
-[1]       data: {
-[1]         UploadImage: {
-[1]           _id: '67e447c204b4b41aabbc10c5',
-[1]           encoding: '7bit',
-[1]           mimetype: 'image/jpeg',
-[1]           filename: 'test.jpg',
-[1]           cloudImageID: 'd970b247-25ba-4d8e-8a62-d88327a5b260',
-[1]           cloudImageName: '5ad1afd7-0f02-4a4c-a17a-5082c966ae36.jpg'
-[1]         }
-[1]       }
-[1]     }
-             */
-
             const deleteQuery = `
                 mutation DeleteImage {
                     DeleteImage (id: "${uploadResponse.body.data.UploadImage._id}")
