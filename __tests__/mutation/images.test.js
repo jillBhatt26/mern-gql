@@ -1,10 +1,9 @@
-const fs = require('fs');
 const path = require('path');
 const { hash: hashPassword } = require('argon2');
 const request = require('supertest');
 const initExpressApolloApp = require('../../app');
 const { TEST_DB_URL } = require('../../config/env');
-const { API_URL, TOTAL_DOC_LIMIT } = require('../../config/constants');
+const { API_URL } = require('../../config/constants');
 const CloudStorage = require('../../common/CloudStorage');
 const { connectMongoDB, disconnectMongoDB } = require('../../db');
 const ImagesModel = require('../../models/Image');
@@ -70,6 +69,95 @@ describe('IMAGES TEST SUITE', () => {
     });
 
     describe('Upload User Image', () => {
+        beforeEach(() => {
+            expect(loggedInUserID).toBeDefined();
+            expect(cookie).toBeDefined();
+        });
+
+        const query = `
+                mutation UploadImage($image: Upload!) {
+                    UploadImage(image: $image) {
+                        _id
+                        encoding
+                        mimetype
+                        filename
+                        cloudImageID
+                        cloudImageName
+                    }
+                }
+            `;
+
+        it('Should validate file size', async () => {
+            const filePath = path.resolve(
+                __dirname,
+                '../',
+                'files',
+                'large.jpg'
+            );
+
+            const response = await request(app)
+                .post(API_URL)
+                .set('Content-Type', 'multipart/form-data')
+                .set('apollo-requires-preflight', true)
+                .set('x-apollo-operation-name', 'UploadImage')
+                .set('Cookie', cookie)
+                .field(
+                    'operations',
+                    JSON.stringify({ query, variables: { image: null } })
+                )
+                .field('map', '{"0":["variables.image"]}')
+                .attach('0', filePath);
+
+            expect(response.status).toBe(200);
+            expect(response.body).toHaveProperty('errors');
+            expect(response.body).toHaveProperty('data');
+            expect(response.body.data).toHaveProperty('UploadImage', null);
+
+            expect(response.body.errors).toStrictEqual(
+                expect.arrayContaining([
+                    {
+                        message:
+                            'File truncated as it exceeds the 1000000 byte size limit.'
+                    }
+                ])
+            );
+        });
+
+        it('Should validate file size', async () => {
+            const filePath = path.resolve(
+                __dirname,
+                '../',
+                'files',
+                'testPPT.pptx'
+            );
+
+            const response = await request(app)
+                .post(API_URL)
+                .set('Content-Type', 'multipart/form-data')
+                .set('apollo-requires-preflight', true)
+                .set('x-apollo-operation-name', 'UploadImage')
+                .set('Cookie', cookie)
+                .field(
+                    'operations',
+                    JSON.stringify({ query, variables: { image: null } })
+                )
+                .field('map', '{"0":["variables.image"]}')
+                .attach('0', filePath);
+
+            expect(response.status).toBe(200);
+            expect(response.body).toHaveProperty('errors');
+            expect(response.body).toHaveProperty('data');
+            expect(response.body.data).toHaveProperty('UploadImage', null);
+
+            expect(response.body.errors).toStrictEqual(
+                expect.arrayContaining([
+                    {
+                        message: 'Unsupported file type provided'
+                    }
+                ])
+            );
+        });
+
         it('Should upload an image file type with allowed dimensions', async () => {
             expect(loggedInUserID).toBeDefined();
             expect(cookie).toBeDefined();
@@ -80,19 +168,6 @@ describe('IMAGES TEST SUITE', () => {
                 'files',
                 'test.jpg'
             );
-
-            const query = `
-  mutation UploadImage($image: Upload!) {
-    UploadImage(image: $image) {
-      _id
-      encoding
-      mimetype
-      filename
-      cloudImageID
-      cloudImageName
-    }
-  }
-`;
 
             const response = await request(app)
                 .post(API_URL)
@@ -109,17 +184,11 @@ describe('IMAGES TEST SUITE', () => {
 
             expect(response.status).toBe(200);
         });
-
-        it('Should validate file size', async () => {});
-
-        it('Should check if user is authenticated', async () => {});
     });
 
     describe('Delete User Image', () => {});
 
     afterEach(async () => {
-        expect(loggedInUserID).toBeDefined();
-
         await UserModel.deleteMany({});
         await ImagesModel.deleteMany({});
 
@@ -127,7 +196,7 @@ describe('IMAGES TEST SUITE', () => {
     });
 
     afterAll(async () => {
-        // await conn.connection.dropCollection('images');
+        await conn.connection.dropCollection('images');
         await conn.connection.dropDatabase();
         await disconnectMongoDB();
     });
