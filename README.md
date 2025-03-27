@@ -1,9 +1,9 @@
-
 # MERN Apollo GraphQL
 
 A basic sandbox application to demonstrate the usage of Apollo GraphQL to build a full-stack application using the MERN stack.
 
 NOTE: Since the app is hosted on a free tier of https://render.com, which does not support shell scripts which are required to generate builds. Hence the client build has to be generated locally and pushed to the origin for it to be used in the server static middleware.
+
 ## Demo
 
 https://mern-gql.onrender.com
@@ -14,30 +14,31 @@ https://mern-gql.onrender.com
 
 **Server:** node.js, express.js, mongodb, graphql, @apollo/server, supabase, express-session, graphql-middleware, graphql-shield, graphql-upload, graphql-rate-limit, supertest
 
-
 ## Server
 
-- Express, MongoDB, GraphQL, Apollo Server
-- Todo API
-- File handling using graphql
-- Express-session user authentication
-- GraphQL-Shield for rate-limiting and query / mutation protection at individual level rather than endpoint level.
-- GraphQL File Upload
-- Supabase cloud storage
-- Supertest e2e tests
+-   Express, MongoDB, GraphQL, Apollo Server
+-   Todo API
+-   File handling using graphql
+-   Express-session user authentication
+-   GraphQL-Shield for rate-limiting and query / mutation protection at individual level rather than endpoint level.
+-   GraphQL File Upload
+-   Supabase cloud storage
+-   Supertest e2e tests
+-   Github Actions CI/CD for tests and render release
 
 ## Client
 
-- Vite React.js app 
-- Multiple apollo clients and providers
-- Zustand state manager
-- Slate Bootswatch theme (Bootstrap)
-- User Signup, Login and Logout
-- Update and Delete account
-- Todo manager page
-- Image Gallery page
-- Custom reusable modal component
-- Custom reusable outside click handler
+-   Vite React.js app
+-   Multiple apollo clients and providers
+-   Zustand state manager
+-   Slate Bootswatch theme (Bootstrap)
+-   User Signup, Login and Logout
+-   Update and Delete account
+-   Todo manager page
+-   Image Gallery page
+-   Custom reusable modal component
+-   Custom reusable outside click handler
+
 ## Usage
 
 Clone the repo
@@ -47,30 +48,35 @@ Clone the repo
 ```
 
 cd to the repo
+
 ```bash
   cd graphql-express-reference
 ```
 
 Install dependencies in server as well as client directories
+
 ```bash
   yarn install && cd client && yarn install
 ```
 
 Create and add environment variables as listed below
+
 ```bash
   touch .env && cd client && touch .env
 ```
 
 Start development servers
+
 ```bash
   yarn dev && cd client && yarn dev
 ```
-    
+
 Build client
+
 ```bash
   cd client && yarn build
 ```
-    
+
 ## Server Environment Variables
 
 To run this project, you will need to add the following environment variables to your root .env file
@@ -97,7 +103,7 @@ To run this project, you will need to add the following environment variables to
 
 To run this project, you will need to add the following environment variables to your client's .env file
 
-`VITE_PORT = 3000` 
+`VITE_PORT = 3000`
 
 `VITE_NODE_ENV = development`
 
