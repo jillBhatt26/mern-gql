@@ -27,8 +27,8 @@ jobs:
                   echo NODE_ENV = ${{ secrets.NODE_ENV }} >> .env
                   echo PORT = ${{ secrets.PORT }} >> .env
                   echo SESSION_SECRET = ${{ secrets.SESSION_SECRET }} >> .env
-                  echo SUPABASE_API_KEY = ${{ secrets.SUPABASE_API_KEY } >> .env
-                  echo SUPABASE_PROJECT_URL = ${{ secrets.SUPABASE_PROJECT_URL } >> .env
+                  echo SUPABASE_API_KEY = ${{ secrets.SUPABASE_API_KEY }} >> .env
+                  echo SUPABASE_PROJECT_URL = ${{ secrets.SUPABASE_PROJECT_URL }} >> .env
                   echo TEST_DB_URL = ${{ secrets.TEST_DB_URL }} >> .env
 
             - name: Use Node.js ${{ matrix.node-version }}
