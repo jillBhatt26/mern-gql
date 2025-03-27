@@ -1,0 +1,66 @@
+name: Test and release
+
+on:
+    push:
+        branches: ['main']
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                node-version: [20.x]
+                mongodb-version: ['7.0']
+
+        steps:
+            - name: Git checkout
+              uses: actions/checkout@v4
+
+            - name: Generate .env
+              run: |
+                  touch .env
+
+                  echo DB_URL = ${{ secrets.DB_URL }} >> .env
+                  echo FE_URL = ${{ secrets.FE_URL }} >> .env
+                  echo INTROSPECTION_URL = ${{ secrets.INTROSPECTION_URL }} >> .env
+                  echo NODE_ENV = ${{ secrets.NODE_ENV }} >> .env
+                  echo PORT = ${{ secrets.PORT }} >> .env
+                  echo SESSION_SECRET = ${{ secrets.SESSION_SECRET }} >> .env
+                  echo SUPABASE_API_KEY = ${{ secrets.SUPABASE_API_KEY } >> .env
+                  echo SUPABASE_PROJECT_URL = ${{ secrets.SUPABASE_PROJECT_URL } >> .env
+                  echo TEST_DB_URL = ${{ secrets.TEST_DB_URL }} >> .env
+
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  cache: 'yarn'
+
+            - name: Start MongoDB
+              uses: supercharge/mongodb-github-action@1.12.0
+              with:
+                  mongodb-version: ${{ matrix.mongodb-version }}
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+
+            - name: Run jest tests
+              run: yarn test
+
+    release:
+        runs-on: ubuntu-latest
+
+        needs: test
+
+        steps:
+            - name: Git checkout
+              uses: actions/checkout@v4
+
+            - name: Deploy
+              if: github.ref == 'refs/heads/main'
+
+              env:
+                  deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+
+              run: curl "$deploy_url"
