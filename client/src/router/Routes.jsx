@@ -9,7 +9,7 @@ const HomePage = lazy(() => import('../pages/Home'));
 const LoginPage = lazy(() => import('../pages/Login'));
 const SettingsPage = lazy(() => import('../pages/Settings'));
 const SignupPage = lazy(() => import('../pages/Signup'));
-const ViewPage = lazy(() => import('../pages/View'));
+const ViewPage = lazy(() => import('../pages/ViewPage'));
 const PrivateRoute = lazy(() => import('./PrivateRoute'));
 const PublicRoute = lazy(() => import('./PublicRoute'));
 
