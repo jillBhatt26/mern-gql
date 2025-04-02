@@ -1,12 +1,12 @@
 *node_modules
-# *dist
+*dist
 *dist-ssr
 *error
 *.logs
 *.log
 *.env
 !example.env
-!client/.env
+# !client/.env
 uploads/*
 !uploads/.gitkeep
 
