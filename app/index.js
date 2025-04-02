@@ -28,12 +28,6 @@ const initExpressApolloApp = async (session_DB_URL = DB_URL) => {
 
     app.use(initAppSession(session_DB_URL));
 
-    // if (NODE_ENV === 'production') {
-    //     app.use(
-    //         express.static(path.resolve(__dirname, '../', 'client', 'dist'))
-    //     );
-    // }
-
     app.use(
         graphqlUploadExpress({
             maxFileSize: 1000000,
@@ -56,28 +50,12 @@ const initExpressApolloApp = async (session_DB_URL = DB_URL) => {
 
     await apolloServer.start();
 
-    // if (NODE_ENV === 'production')
-    //     app.get('/graphql', (_, res) => {
-    //         return res.status(404).redirect('/error');
-    //     });
-
     app.use(
         '/graphql',
         expressMiddleware(apolloServer, {
             context: ({ req, res }) => ({ req, res })
         })
     );
-
-    // if (NODE_ENV === 'production') {
-    //     app.get('*', (req, res) => {
-    //         res.sendFile(
-    //             path.join(__dirname, '../', 'client', 'dist', 'index.html')
-    //         );
-    //     });
-    // }
-
-    // NOTE: redirect home page to graphql route and show the introspection tool
-    // app.get('/', (_, res) => res.status(301).redirect('/graphql'));
 
     return app;
 };
