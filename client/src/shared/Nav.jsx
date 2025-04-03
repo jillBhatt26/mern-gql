@@ -11,6 +11,7 @@ import { LOGOUT_USER } from '../services/mutation/User';
 import useAuthStore from '../stores/auth';
 import useImagesStore from '../stores/images';
 import useTodoStore from '../stores/todo';
+import useLoadingStore from '../stores/loading';
 
 const Nav = () => {
     // states
@@ -26,6 +27,7 @@ const Nav = () => {
     const authUser = useAuthStore(state => state.authUser);
     const userImages = useImagesStore(state => state.userImages);
     const userTodos = useTodoStore(state => state.userTodos);
+    const isLoading = useLoadingStore(state => state.isLoading);
     const removeAllUserImages = useImagesStore(
         state => state.removeAllUserImages
     );
@@ -64,10 +66,12 @@ const Nav = () => {
 
     // effects
     useEffect(() => {
-        setDisableNavButton(loading);
-    }, [loading]);
+        setDisableNavButton(loading || isLoading);
+    }, [loading, isLoading]);
 
     useEffect(() => {
+        if (isLoading) return setNavButtonLabel('Login');
+
         if (location.pathname.includes('view'))
             return setNavButtonLabel('Logout');
 
@@ -106,7 +110,7 @@ const Nav = () => {
                 setNavButtonLabel('Logout');
                 break;
         }
-    }, [location.pathname, authUser]);
+    }, [location.pathname, authUser, isLoading]);
 
     useEffect(() => {
         setDisableAddImageButton(userImages.length >= 10);
@@ -115,6 +119,8 @@ const Nav = () => {
     // event handlers
     const handleNavButtonClick = e => {
         e.preventDefault();
+
+        if (isLoading) return;
 
         if (location.pathname.includes('view')) return logoutUser();
 

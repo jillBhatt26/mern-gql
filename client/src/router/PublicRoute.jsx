@@ -4,6 +4,7 @@ import { Outlet, Navigate } from 'react-router-dom';
 import LoadingPage from '../pages/Loading';
 import { FETCH_ACTIVE_USER } from '../services/query/User';
 import useAuthStore from '../stores/auth';
+import useLoadingStore from '../stores/loading';
 
 const PublicRoute = ({ redirectTo = undefined }) => {
     const [user, setUser] = useState(null);
@@ -12,6 +13,7 @@ const PublicRoute = ({ redirectTo = undefined }) => {
     // hooks
     const authUser = useAuthStore(state => state.authUser);
     const setAuthUser = useAuthStore(state => state.setAuthUser);
+    const setIsLoading = useLoadingStore(state => state.setIsLoading);
     const { data, loading } = useQuery(FETCH_ACTIVE_USER, {
         skip: authUser !== null
     });
@@ -31,6 +33,10 @@ const PublicRoute = ({ redirectTo = undefined }) => {
             setIsFetchingUser(false);
         }
     }, [data]);
+
+    useEffect(() => {
+        setIsLoading(isFetchingUser || loading);
+    }, [isFetchingUser, loading, setIsLoading]);
 
     if (isFetchingUser || loading) return <LoadingPage />;
 
