@@ -138,7 +138,7 @@ const SignupPage = () => {
                             {loading ? (
                                 <div className="progress">
                                     <div
-                                        className="progress-bar progress-bar-striped bg-info"
+                                        className="progress-bar progress-bar-striped bg-success"
                                         role="progressbar"
                                         style={{ width: '100%' }}
                                         aria-valuenow={100}

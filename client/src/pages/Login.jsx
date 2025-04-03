@@ -1,11 +1,36 @@
 import { useMutation } from '@apollo/client';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import * as yup from 'yup';
+import YupPassword from 'yup-password';
 import Nav from '../shared/Nav';
 import Footer from '../shared/Footer';
 import { LOGIN_USER } from '../services/mutation/User';
 import { FETCH_ACTIVE_USER } from '../services/query/User';
 import useAuthStore from '../stores/auth';
+
+YupPassword(yup);
+
+// yup validations
+
+const loginInputsSchema = yup.object({
+    usernameOrEmail: yup
+        .string('Username or email should be string')
+        .trim()
+        .required('Either username or email is required')
+        .min(4, 'Username or email should be at least 4 characters long')
+        .max(
+            255,
+            'Username or email should not be more than 255 characters long'
+        ),
+    password: yup
+        .string('Password should be string')
+        .trim()
+        .required('Password is required')
+        .password('Should be a valid and strong password')
+        .min(4, 'Password should be at least 4 characters long')
+        .max(255, 'Password should not be more than 255 characters long')
+});
 
 const LoginPage = () => {
     // states
@@ -20,12 +45,6 @@ const LoginPage = () => {
     const navigate = useNavigate();
 
     const [loginUser, { loading }] = useMutation(LOGIN_USER, {
-        variables: {
-            loginUserInput: {
-                usernameOrEmail: inputUsernameOrEmail,
-                password: inputPassword
-            }
-        },
         onCompleted: data => {
             if (data && data.LoginUser) {
                 setAuthUser(data.LoginUser);
@@ -56,13 +75,23 @@ const LoginPage = () => {
     }, [loading, loginError]);
 
     // event handlers
-    const handleLogin = e => {
+    const handleLogin = async e => {
         e.preventDefault();
 
-        if (!inputUsernameOrEmail || !inputPassword)
-            return setLoginError('Please provide all user details to login!');
+        try {
+            const loginUserInput = await loginInputsSchema.validate({
+                usernameOrEmail: inputUsernameOrEmail,
+                password: inputPassword
+            });
 
-        loginUser();
+            loginUser({
+                variables: {
+                    loginUserInput
+                }
+            });
+        } catch (error) {
+            setLoginError(error.message);
+        }
     };
 
     return (
@@ -128,7 +157,7 @@ const LoginPage = () => {
                             {loading ? (
                                 <div className="progress">
                                     <div
-                                        className="progress-bar progress-bar-striped bg-info"
+                                        className="progress-bar progress-bar-striped bg-success"
                                         role="progressbar"
                                         style={{ width: '100%' }}
                                         aria-valuenow={100}
