@@ -35,7 +35,9 @@ const PrivateRoute = () => {
 
     useEffect(() => {
         setIsLoading(isFetchingUser || loading);
-    }, [isFetchingUser, loading, setIsLoading]);
+
+        // eslint-disable-next-line
+    }, [isFetchingUser, loading]);
 
     if (authUser) return <Outlet />;
 

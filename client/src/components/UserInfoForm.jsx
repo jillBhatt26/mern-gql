@@ -1,16 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
+import * as yup from 'yup';
+import YupPassword from 'yup-password';
 import { UPDATE_USER } from '../services/mutation/User';
 import { FETCH_ACTIVE_USER } from '../services/query/User';
 import useAuthStore from '../stores/auth';
 import UpdateAccountModal from './UpdateAccountModal';
+
+// extend yup
+YupPassword(yup);
 
 const UserInfoForm = () => {
     // states
     const [inputUsername, setInputUsername] = useState('');
     const [inputEmail, setInputEmail] = useState('');
     const [inputPassword, setInputPassword] = useState('');
+    const [inputConfirmPassword, setInputConfirmPassword] = useState('');
     const [updateUserInputs, setUpdateUserInputs] = useState({});
     const [updateUserError, setUpdateUserError] = useState(null);
     const [disableButton, setDisableButton] = useState(false);
@@ -21,6 +27,63 @@ const UserInfoForm = () => {
     const navigate = useNavigate();
     const authUser = useAuthStore(state => state.authUser);
     const unsetAuthUser = useAuthStore(state => state.unsetAuthUser);
+
+    const settingsInputsSchema = useMemo(
+        () =>
+            yup
+                .object({
+                    username: yup
+                        .string()
+                        .trim()
+                        .optional()
+                        .min(
+                            4,
+                            'Username should be more than 4 characters long'
+                        )
+                        .max(
+                            255,
+                            'Username should be less than 255 characters long'
+                        )
+                        .matches(
+                            /^[^\s<>&'"\\]+$/,
+                            'Cannot contain spaces or special characters'
+                        )
+                        .notOneOf(
+                            [authUser.username],
+                            'New username cannot be same as existing one'
+                        ),
+                    email: yup
+                        .string()
+                        .trim()
+                        .optional()
+                        .email('Invalid email provided')
+                        .notOneOf(
+                            [authUser.email],
+                            'New email cannot be same as existing one'
+                        ),
+                    password: yup
+                        .string()
+                        .trim()
+                        .optional()
+                        .password()
+                        .min(
+                            4,
+                            'Password should be more than 4 characters long'
+                        )
+                        .max(
+                            255,
+                            'Password should be less than 255 characters long'
+                        ),
+                    confirmPassword: yup
+                        .string()
+                        .trim()
+                        .optional()
+                        .password()
+                        .oneOf([yup.ref('password')], 'Passwords should match!')
+                })
+                .required('All Inputs Required!'),
+        [authUser]
+    );
 
     const [updateUser, { loading }] = useMutation(UPDATE_USER, {
         variables: {
@@ -60,31 +123,51 @@ const UserInfoForm = () => {
 
         const updateUserInputsData = {};
 
-        if (inputEmail && inputEmail.trim())
-            updateUserInputsData.email = inputEmail.trim();
+        try {
+            if (inputEmail.trim().length)
+                updateUserInputsData.email = inputEmail;
 
-        if (inputUsername && inputUsername.trim())
-            updateUserInputsData.username = inputUsername.trim();
+            if (inputUsername.trim().length)
+                updateUserInputsData.username = inputUsername;
 
-        if (inputPassword && inputPassword.trim())
-            updateUserInputsData.password = inputPassword.trim();
+            if (
+                inputPassword.trim().length &&
+                inputConfirmPassword.trim().length
+            ) {
+                updateUserInputsData.password = inputPassword;
+                updateUserInputsData.confirmPassword = inputConfirmPassword;
+            }
 
-        if (!Object.keys(updateUserInputsData).length)
-            return setUpdateUserError('Enter any one value to update user!');
+            if (
+                (!inputPassword && inputConfirmPassword) ||
+                (inputPassword && !inputConfirmPassword)
+            ) {
+                return setUpdateUserError(
+                    'Provide password and confirm password values'
+                );
+            }
 
-        if (updateUserInputsData.email === authUser.email)
-            return setUpdateUserError(
-                'New email should be different than existing one'
+            if (!Object.keys(updateUserInputsData).length)
+                return setUpdateUserError(
+                    'Enter all required values to update user!'
+                );
+
+            const updateUserInp = await settingsInputsSchema.validate(
+                updateUserInputsData
             );
 
-        if (updateUserInputsData.username === authUser.username)
-            return setUpdateUserError(
-                'New username should be different than existing one'
-            );
+            const { username, email, password } = updateUserInp;
 
-        setUpdateUserInputs(updateUserInputsData);
+            setUpdateUserInputs({
+                username,
+                email,
+                password
+            });
 
-        setShowUpdateUserConfirmModal(true);
+            setShowUpdateUserConfirmModal(true);
+        } catch (error) {
+            setUpdateUserError(error.message);
+        }
     };
 
     return (
@@ -141,10 +224,7 @@ const UserInfoForm = () => {
                 </div>
 
                 <div>
-                    <label
-                        htmlFor="usernameOrEmail"
-                        className="form-label mt-4"
-                    >
+                    <label htmlFor="password" className="form-label mt-4">
                         New Password
                     </label>
                     <input
@@ -152,7 +232,25 @@ const UserInfoForm = () => {
                         className="form-control"
                         id="password"
                         placeholder="New password"
+                        value={inputPassword}
                         onChange={e => setInputPassword(e.target.value)}
+                    />
+                </div>
+
+                <div>
+                    <label
+                        htmlFor="confirmPassword"
+                        className="form-label mt-4"
+                    >
+                        Confirm New Password
+                    </label>
+                    <input
+                        type="password"
+                        className="form-control"
+                        id="confirmPassword"
+                        placeholder="Confirm New password"
+                        value={inputConfirmPassword}
+                        onChange={e => setInputConfirmPassword(e.target.value)}
                     />
                 </div>
 

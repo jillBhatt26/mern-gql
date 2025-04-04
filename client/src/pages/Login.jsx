@@ -27,9 +27,7 @@ const loginInputsSchema = yup.object({
         .string('Password should be string')
         .trim()
         .required('Password is required')
-        .password('Should be a valid and strong password')
-        .min(4, 'Password should be at least 4 characters long')
-        .max(255, 'Password should not be more than 255 characters long')
+        .password()
 });
 
 const LoginPage = () => {
@@ -79,6 +77,9 @@ const LoginPage = () => {
         e.preventDefault();
 
         try {
+            if (!inputUsernameOrEmail.trim() || !inputPassword.trim())
+                return setLoginError('All fields required!');
+
             const loginUserInput = await loginInputsSchema.validate({
                 usernameOrEmail: inputUsernameOrEmail,
                 password: inputPassword

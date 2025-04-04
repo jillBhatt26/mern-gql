@@ -1,17 +1,62 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
+import * as yup from 'yup';
+import YupPassword from 'yup-password';
 import { SIGNUP_USER } from '../services/mutation/User';
 import { FETCH_ACTIVE_USER } from '../services/query/User';
 import Nav from '../shared/Nav';
 import Footer from '../shared/Footer';
 import useAuthStore from '../stores/auth';
 
+// extend yup
+YupPassword(yup);
+
+// schema
+const signupInputsSchema = yup
+    .object({
+        username: yup
+            .string('Username must be a string')
+            .trim()
+            .required('Username is required')
+            .min(4, 'Username should be more than 4 characters long')
+            .max(255, 'Username should be less than 255 characters long')
+            .matches(
+                /^[^\s<>&'"\\]+$/,
+                'Cannot contain spaces or special characters'
+            ),
+        email: yup
+            .string('Email should be a string')
+            .trim()
+            .email('Email is invalid')
+            .required('Email is required'),
+        password: yup
+            .string('Password must be a string')
+            .trim()
+            .required('Password is required')
+            .password()
+            .min(8, 'Password should be more than 8 characters')
+            .max(255, 'Password should be less than 255 characters'),
+        confirmPassword: yup
+            .string('Confirm password must be a string')
+            .trim()
+            .required('Please retype password to confirm password')
+            .password()
+            .oneOf(
+                [yup.ref('password')],
+                'Confirm password should be same as password'
+            )
+            .min(8, 'Confirm Password should be more than 8 characters')
+            .max(255, 'Confirm Password should be less than 255 characters')
+    })
+    .required('All inputs are required');
+
 const SignupPage = () => {
     // states
     const [inputEmail, setInputEmail] = useState('');
     const [inputUsername, setInputUsername] = useState('');
     const [inputPassword, setInputPassword] = useState('');
+    const [inputConfirmPassword, setInputConfirmPassword] = useState('');
     const [signupError, setSignupError] = useState(null);
     const [disableButton, setDisableButton] = useState(false);
 
@@ -20,13 +65,6 @@ const SignupPage = () => {
     const setAuthUser = useAuthStore(state => state.setAuthUser);
 
     const [signupUser, { loading }] = useMutation(SIGNUP_USER, {
-        variables: {
-            signupUserInput: {
-                username: inputUsername,
-                email: inputEmail,
-                password: inputPassword
-            }
-        },
         onCompleted: data => {
             if (data && data.SignupUser && navigate) {
                 setAuthUser(data.SignupUser);
@@ -58,14 +96,31 @@ const SignupPage = () => {
     }, [loading, signupError]);
 
     // event handlers
-    const handleUserSignup = e => {
+    const handleUserSignup = async e => {
         e.preventDefault();
 
-        if (!inputEmail || !inputUsername || !inputPassword) {
-            setSignupError('All fields required to sign up!');
-        }
+        try {
+            const signupUserInput = await signupInputsSchema.validate({
+                username: inputUsername,
+                email: inputEmail,
+                password: inputPassword,
+                confirmPassword: inputConfirmPassword
+            });
 
-        signupUser();
+            const { email, username, password } = signupUserInput;
+
+            signupUser({
+                variables: {
+                    signupUserInput: {
+                        username,
+                        email,
+                        password
+                    }
+                }
+            });
+        } catch (error) {
+            setSignupError(error.message);
+        }
     };
 
     return (
@@ -125,7 +180,29 @@ const SignupPage = () => {
                             id="password"
                             placeholder="Password"
                             autoComplete="off"
+                            value={inputPassword}
                             onChange={e => setInputPassword(e.target.value)}
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            htmlFor="confirmPassword"
+                            className="form-label mt-4"
+                        >
+                            Password
+                        </label>
+
+                        <input
+                            type="password"
+                            className="form-control"
+                            id="confirmPassword"
+                            placeholder="Confirm Password"
+                            autoComplete="off"
+                            value={inputConfirmPassword}
+                            onChange={e =>
+                                setInputConfirmPassword(e.target.value)
+                            }
                         />
                     </div>
 
