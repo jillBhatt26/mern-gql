@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useMutation } from '@apollo/client';
+import * as yup from 'yup';
 import { CREATE_TODO, UPDATE_TODO } from '../services/mutation/Todo';
 import { FETCH_USER_TODOS } from '../services/query/Todo';
 import Modal from '../shared/Modal';
@@ -25,6 +26,30 @@ const TodoFormModal = ({
         useState(false);
     const [todoFormError, setTodoFormError] = useState(null);
 
+    const todoInputsSchema = useMemo(
+        () =>
+            yup.object({
+                name: yup
+                    .string('Name should be a string')
+                    .trim()
+                    .required('Name is required')
+                    .min(4, 'Name should be more than 4 characters long')
+                    .max(255, 'Name should be less than 255 characters'),
+                description: yup
+                    .string('Description should be a string')
+                    .trim()
+                    .required('Description is required')
+                    .min(4, 'Description should be more than 4 characters long')
+                    .max(255, 'Description should be less than 255 characters'),
+                status: yup
+                    .string('Status should be a string')
+                    .trim()
+                    .required('Status is required')
+                    .oneOf(['PENDING', 'PROGRESS', 'COMPLETE'])
+            }),
+        []
+    );
+
     // hooks
     const userTodos = useTodoStore(state => state.userTodos);
     const pushNewUserTodo = useTodoStore(state => state.pushNewUserTodo);
@@ -32,13 +57,6 @@ const TodoFormModal = ({
     const [createTodo, { loading: createTodoLoading }] = useMutation(
         CREATE_TODO,
         {
-            variables: {
-                createTodoInput: {
-                    description: inputTodoDescription.trim(),
-                    name: inputTodoName.trim(),
-                    status: inputTodoStatus
-                }
-            },
             onCompleted: data => {
                 if (data.CreateTodo) {
                     pushNewUserTodo(data.CreateTodo);
@@ -123,28 +141,49 @@ const TodoFormModal = ({
     }, [todoFormError, createTodoLoading, updateTodoLoading]);
 
     // event handlers
-    const handleTodoFormSubmit = e => {
+    const handleTodoFormSubmit = async e => {
         e.preventDefault();
 
-        if (
-            !inputTodoName.trim() ||
-            !inputTodoDescription.trim() ||
-            !inputTodoStatus
-        )
-            return setTodoFormError('Please provide all details!');
+        try {
+            if (
+                !inputTodoName.trim() ||
+                !inputTodoDescription.trim() ||
+                !inputTodoStatus
+            )
+                return setTodoFormError('Please provide all details!');
 
-        if (purpose.toLowerCase() === 'add') createTodo();
-        if (purpose.toLowerCase() === 'update')
-            updateTodo({
-                variables: {
-                    updateTodoInput: {
-                        id: todoToUpdate.id,
-                        name: inputTodoName.trim(),
-                        description: inputTodoDescription.trim(),
-                        status: inputTodoStatus
-                    }
-                }
+            const todoFormInputs = await todoInputsSchema.validate({
+                name: inputTodoName,
+                description: inputTodoDescription,
+                status: inputTodoStatus
             });
+
+            const { name, description, status } = todoFormInputs;
+
+            if (purpose.toLowerCase() === 'add')
+                createTodo({
+                    variables: {
+                        createTodoInput: {
+                            name,
+                            description,
+                            status
+                        }
+                    }
+                });
+            if (purpose.toLowerCase() === 'update')
+                updateTodo({
+                    variables: {
+                        updateTodoInput: {
+                            id: todoToUpdate.id,
+                            name,
+                            description,
+                            status
+                        }
+                    }
+                });
+        } catch (error) {
+            setTodoFormError(error.message);
+        }
     };
 
     const resetStates = () => {

@@ -8,7 +8,7 @@ const CloudStorage = require('../../../common/CloudStorage');
 const CustomError = require('../../../common/CustomError');
 const { TOTAL_DOC_LIMIT } = require('../../../config/constants');
 const ImagesModel = require('../../../models/Image');
-const { ImageType, DeleteImageInput, imageID } = require('../../types/images');
+const { ImageType, imageID } = require('../../types/images');
 
 // const pathToUploadsDir = path.resolve(
 //     __dirname,
@@ -114,11 +114,6 @@ const UploadImage = {
 
 const DeleteImage = {
     type: new GraphQLNonNull(GraphQLBoolean),
-    // args: {
-    //     deleteImageInput: {
-    //         type: new GraphQLNonNull(DeleteImageInput)
-    //     }
-    // },
     args: {
         id: {
             type: imageID

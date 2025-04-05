@@ -6,7 +6,7 @@ NOTE: Since the app is hosted on a free tier of https://render.com, which does n
 
 ## Demo
 
-https://mern-gql.onrender.com
+https://m-gql-c.onrender.com
 
 ## Tech Stack
 
